@@ -18,4 +18,4 @@ spring:
   sql:
     init:
       continue-on-error: false
-      mode: never
+      mode: always
