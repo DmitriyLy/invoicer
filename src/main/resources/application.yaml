@@ -9,7 +9,7 @@ spring:
     generate-ddl: true
     show-sql: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
     properties:
       hibernate:
         globally_quoted_indentifiers: true
@@ -19,3 +19,6 @@ spring:
     init:
       continue-on-error: false
       mode: always
+
+flyway:
+  locations: 'classpath:db/migration'
