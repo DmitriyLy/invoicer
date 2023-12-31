@@ -6,6 +6,7 @@ import io.dmly.invoicer.model.User;
 import io.dmly.invoicer.model.enumaration.VerificationUrlType;
 import io.dmly.invoicer.repository.RoleRepository;
 import io.dmly.invoicer.repository.UserRepository;
+import io.dmly.invoicer.rowmapper.UserRowMapper;
 import io.dmly.invoicer.service.EmailService;
 import io.dmly.invoicer.service.VerificationUrlGenerator;
 import lombok.RequiredArgsConstructor;
@@ -16,13 +17,13 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 import static io.dmly.invoicer.model.enumaration.RoleType.ROLE_USER;
 import static io.dmly.invoicer.query.UserQueries.*;
@@ -36,6 +37,19 @@ public class UserRepositoryImpl implements UserRepository<User> {
     private final PasswordEncoder passwordEncoder;
     private final VerificationUrlGenerator verificationUrlGenerator;
     private final EmailService emailService;
+    private final UserRowMapper userRowMapper;
+
+    @Override
+    public Optional<User> getUserByEmail(String email) {
+
+        User user = null;
+        try {
+            user = jdbcTemplate.queryForObject(SELECT_USER_BY_EMAIL, Map.of("email", email), userRowMapper);
+        } catch (EmptyResultDataAccessException e) {
+            log.error("Cannot find a user by email {}", email);
+        }
+        return Optional.ofNullable(user);
+    }
 
     @Override
     public User create(User user) {

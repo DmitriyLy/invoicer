@@ -3,6 +3,7 @@ package io.dmly.invoicer.repository;
 import io.dmly.invoicer.model.User;
 
 import java.util.Collection;
+import java.util.Optional;
 
 public interface UserRepository <T extends User> {
 
@@ -11,5 +12,5 @@ public interface UserRepository <T extends User> {
     T get(Long id);
     T update(T user);
     Boolean delete(Long id);
-
+    Optional<T> getUserByEmail(String email);
 }

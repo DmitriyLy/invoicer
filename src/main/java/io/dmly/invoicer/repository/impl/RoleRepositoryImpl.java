@@ -4,6 +4,7 @@ import io.dmly.invoicer.model.Role;
 import io.dmly.invoicer.repository.RoleRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -11,8 +12,10 @@ import org.springframework.stereotype.Repository;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 import static io.dmly.invoicer.query.RoleQueries.SELECT_ROLE_BY_NAME_QUERY;
+import static io.dmly.invoicer.query.RoleQueries.SELECT_ROLE_BY_USER_ID;
 import static io.dmly.invoicer.query.UserQueries.INSERT_SET_ROLE_FOR_USER;
 
 @Repository
@@ -63,8 +66,15 @@ public class RoleRepositoryImpl implements RoleRepository<Role> {
     }
 
     @Override
-    public Role getRoleByUserId(Long userId) {
-        return null;
+    public Optional<Role> getRoleByUserId(Long userId) {
+        try {
+            return Optional.ofNullable(
+                    jdbcTemplate.queryForObject(SELECT_ROLE_BY_USER_ID, Map.of("userId", userId), roleRowMapper)
+            );
+        } catch (EmptyResultDataAccessException e)  {
+            log.error("Cannot find role by user id {}", userId);
+            return Optional.empty();
+        }
     }
 
     @Override

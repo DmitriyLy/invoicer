@@ -8,4 +8,5 @@ public class UserQueries {
             "VALUES(:userId, :url)";
     public static final String INSERT_SET_ROLE_FOR_USER = "INSERT INTO UserRoles(user_id, role_id) " +
             "VALUES(:userId, :roleId)";
+    public static final String SELECT_USER_BY_EMAIL = "SELECT * FROM Users WHERE email = :email";
 }
