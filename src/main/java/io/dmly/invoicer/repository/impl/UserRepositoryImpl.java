@@ -1,5 +1,6 @@
 package io.dmly.invoicer.repository.impl;
 
+import io.dmly.invoicer.dto.UserDto;
 import io.dmly.invoicer.exception.ApiException;
 import io.dmly.invoicer.model.Role;
 import io.dmly.invoicer.model.User;
@@ -11,6 +12,7 @@ import io.dmly.invoicer.service.EmailService;
 import io.dmly.invoicer.service.VerificationUrlGenerator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -20,10 +22,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 import static io.dmly.invoicer.model.enumaration.RoleType.ROLE_USER;
 import static io.dmly.invoicer.query.UserQueries.*;
@@ -32,6 +31,7 @@ import static io.dmly.invoicer.query.UserQueries.*;
 @RequiredArgsConstructor
 @Slf4j
 public class UserRepositoryImpl implements UserRepository<User> {
+    private static final String SQL_DATE_FORMAT = "yyyy-MM-dd hh:mm:ss";
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final RoleRepository<Role> roleRepository;
     private final PasswordEncoder passwordEncoder;
@@ -104,6 +104,20 @@ public class UserRepositoryImpl implements UserRepository<User> {
     @Override
     public Boolean delete(Long id) {
         return null;
+    }
+
+    @Override
+    public void updateVerificationCodeForUser(UserDto userDto, String verificationCode, Date codeExpirationDate) {
+        try {
+            jdbcTemplate.update(UPSERT_VERIFICATION_CODE_FOR_USER, Map.of(
+                    "userId", userDto.id(),
+                    "code", verificationCode,
+                    "expirationDate", DateFormatUtils.format(codeExpirationDate, SQL_DATE_FORMAT)
+            ));
+        } catch (Exception e) {
+            log.error("An error occurred.", e);
+            throw new ApiException("An error occurred. Please try later", e);
+        }
     }
 
     private Integer getEmailCount(String email) {

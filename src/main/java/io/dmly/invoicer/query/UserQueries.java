@@ -9,4 +9,10 @@ public class UserQueries {
     public static final String INSERT_SET_ROLE_FOR_USER = "INSERT INTO UserRoles(user_id, role_id) " +
             "VALUES(:userId, :roleId)";
     public static final String SELECT_USER_BY_EMAIL = "SELECT * FROM Users WHERE email = :email";
+    public static final String UPSERT_VERIFICATION_CODE_FOR_USER = """
+            INSERT INTO TwoFactorVerifications (user_id, code, expiration_date) 
+            VALUES(:userId, :code, TO_TIMESTAMP(:expirationDate, 'YYYY-MM-DD HH:MI:SS')) 
+            ON CONFLICT(user_id) DO 
+            UPDATE SET code=:code, expiration_date=TO_TIMESTAMP(:expirationDate, 'YYYY-MM-DD HH:MI:SS')
+            """;
 }

@@ -32,13 +32,7 @@ public class UserController {
     public ResponseEntity<HttpResponse> login(@RequestBody LoginForm loginForm) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginForm.getEmail(), loginForm.getPassword()));
         UserDto userDto = userDtoMapper.fromUser(userService.getUserByEmail(loginForm.getEmail()));
-        return ResponseEntity.ok(HttpResponse.builder()
-                .timestamp(LocalDateTime.now().toString())
-                .data(Map.of("user", userDto))
-                .message("Login success")
-                .status(HttpStatus.OK)
-                .statusCode(HttpStatus.OK.value())
-                .build());
+        return userDto.isUsingMfa() ? getVerificationCodeResponse(userDto) : getUserDataResponse(userDto);
     }
 
     @PostMapping(path = "/register")
@@ -64,6 +58,27 @@ public class UserController {
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private ResponseEntity<HttpResponse> getVerificationCodeResponse(UserDto userDto) {
+        userService.sendVerificationCode(userDto);
+        return ResponseEntity.ok(HttpResponse.builder()
+                .timestamp(LocalDateTime.now().toString())
+                .data(Map.of("user", userDto))
+                .message("Verification code has been sent")
+                .status(HttpStatus.OK)
+                .statusCode(HttpStatus.OK.value())
+                .build());
+    }
+
+    private ResponseEntity<HttpResponse> getUserDataResponse(UserDto userDto) {
+        return ResponseEntity.ok(HttpResponse.builder()
+                .timestamp(LocalDateTime.now().toString())
+                .data(Map.of("user", userDto))
+                .message("Login success")
+                .status(HttpStatus.OK)
+                .statusCode(HttpStatus.OK.value())
+                .build());
     }
 
 
