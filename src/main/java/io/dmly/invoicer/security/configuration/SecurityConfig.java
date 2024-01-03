@@ -27,7 +27,8 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 @RequiredArgsConstructor
 public class SecurityConfig {
     private static final String[] PUBLIC_URLS = {
-            "/api/v1/user/login/**"
+            "/api/v1/user/login/**",
+            "/api/v1/user/verify/**"
     };
 
     private final PasswordEncoder passwordEncoder;

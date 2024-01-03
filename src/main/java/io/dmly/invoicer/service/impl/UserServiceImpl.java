@@ -1,7 +1,5 @@
 package io.dmly.invoicer.service.impl;
 
-import io.dmly.invoicer.dto.UserDto;
-import io.dmly.invoicer.entitymapper.UserDtoMapper;
 import io.dmly.invoicer.exception.ApiException;
 import io.dmly.invoicer.model.User;
 import io.dmly.invoicer.repository.UserRepository;
@@ -13,6 +11,7 @@ import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -33,14 +32,27 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void sendVerificationCode(UserDto userDto) {
+    public void sendVerificationCode(User user) {
         String verificationCode = RandomStringUtils.randomAlphabetic(8);
         Date codeExpirationDate = DateUtils.addDays(new Date(), 1);
-        userRepository.updateVerificationCodeForUser(userDto, verificationCode, codeExpirationDate);
-        sendCodeViaSms(userDto, verificationCode, codeExpirationDate);
+        userRepository.updateVerificationCodeForUser(user, verificationCode, codeExpirationDate);
+        sendCodeViaSms(user, verificationCode, codeExpirationDate);
     }
 
-    protected void sendCodeViaSms(UserDto userDto, String verificationCode, Date codeExpirationDate) {
+    @Override
+    public User getUserByEmailAndValidCode(String email, String code) {
+        Optional<User> user = userRepository.getUserByEmailAndValidCode(email, code);
+
+        if (user.isEmpty()) {
+            log.error("Cannot find a user by passed email {} and code {}", email, code);
+            throw new ApiException("Cannot verify a user by passed parameters");
+        }
+
+        userRepository.deleteVerificationCodeByUserId(user.get().getId());
+        return user.get();
+    }
+
+    protected void sendCodeViaSms(User userDto, String verificationCode, Date codeExpirationDate) {
         String message = String.format("Invoicer verification code: %s, active till %s", verificationCode, codeExpirationDate);
         log.info("-----> Sending verification code in SMS >>>>>>>> " + message);
     }

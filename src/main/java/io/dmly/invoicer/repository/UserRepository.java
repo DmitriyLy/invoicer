@@ -1,6 +1,5 @@
 package io.dmly.invoicer.repository;
 
-import io.dmly.invoicer.dto.UserDto;
 import io.dmly.invoicer.model.User;
 
 import java.util.Collection;
@@ -15,5 +14,7 @@ public interface UserRepository <T extends User> {
     T update(T user);
     Boolean delete(Long id);
     Optional<T> getUserByEmail(String email);
-    void updateVerificationCodeForUser(UserDto userDto, String verificationCode, Date codeExpirationDate);
+    void updateVerificationCodeForUser(User user, String verificationCode, Date codeExpirationDate);
+    Optional<T> getUserByEmailAndValidCode(String email, String code);
+    void deleteVerificationCodeByUserId(Long userId);
 }

@@ -15,4 +15,13 @@ public class UserQueries {
             ON CONFLICT(user_id) DO 
             UPDATE SET code=:code, expiration_date=TO_TIMESTAMP(:expirationDate, 'YYYY-MM-DD HH:MI:SS')
             """;
+    public static final String SELECT_USER_BY_EMAIL_AND_VALID_CODE = """
+            SELECT Users.*
+            FROM Users
+                     INNER JOIN TwoFactorVerifications as codes on users.id = codes.user_id
+            WHERE users.email = :email
+              AND codes.code = :code
+              AND codes.expiration_date >= now();
+            """;
+    public static final String DELETE_VERIFICATION_CODE_BY_USER_ID = "DELETE FROM TwoFactorVerifications WHERE user_id = :userId";
 }

@@ -1,6 +1,5 @@
 package io.dmly.invoicer.repository.impl;
 
-import io.dmly.invoicer.dto.UserDto;
 import io.dmly.invoicer.exception.ApiException;
 import io.dmly.invoicer.model.Role;
 import io.dmly.invoicer.model.User;
@@ -41,7 +40,6 @@ public class UserRepositoryImpl implements UserRepository<User> {
 
     @Override
     public Optional<User> getUserByEmail(String email) {
-
         User user = null;
         try {
             user = jdbcTemplate.queryForObject(SELECT_USER_BY_EMAIL, Map.of("email", email), userRowMapper);
@@ -107,13 +105,39 @@ public class UserRepositoryImpl implements UserRepository<User> {
     }
 
     @Override
-    public void updateVerificationCodeForUser(UserDto userDto, String verificationCode, Date codeExpirationDate) {
+    public void updateVerificationCodeForUser(User user, String verificationCode, Date codeExpirationDate) {
         try {
             jdbcTemplate.update(UPSERT_VERIFICATION_CODE_FOR_USER, Map.of(
-                    "userId", userDto.id(),
+                    "userId", user.getId(),
                     "code", verificationCode,
                     "expirationDate", DateFormatUtils.format(codeExpirationDate, SQL_DATE_FORMAT)
             ));
+        } catch (Exception e) {
+            log.error("An error occurred.", e);
+            throw new ApiException("An error occurred. Please try later", e);
+        }
+    }
+
+    @Override
+    public Optional<User> getUserByEmailAndValidCode(String email, String code) {
+        User user = null;
+        try {
+            user = jdbcTemplate.queryForObject(SELECT_USER_BY_EMAIL_AND_VALID_CODE,
+                    Map.of(
+                            "email", email,
+                            "code", code
+                    ),
+                    userRowMapper);
+        } catch (EmptyResultDataAccessException e) {
+            log.error("Cannot find a user by email {} and code {}", email, code);
+        }
+        return Optional.ofNullable(user);
+    }
+
+    @Override
+    public void deleteVerificationCodeByUserId(Long userId) {
+        try {
+            jdbcTemplate.update(DELETE_VERIFICATION_CODE_BY_USER_ID, Map.of("userId", userId));
         } catch (Exception e) {
             log.error("An error occurred.", e);
             throw new ApiException("An error occurred. Please try later", e);

@@ -1,11 +1,10 @@
 package io.dmly.invoicer.model;
 
+import io.dmly.invoicer.utils.PermissionUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Arrays;
 import java.util.Collection;
 
 @RequiredArgsConstructor
@@ -15,9 +14,7 @@ public class InvoicerUserDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Arrays.stream(permissions.split(","))
-                .map(SimpleGrantedAuthority::new)
-                .toList();
+        return PermissionUtils.getAuthorities(permissions);
     }
 
     @Override
