@@ -2,13 +2,13 @@ package io.dmly.invoicer.security.filter;
 
 import io.dmly.invoicer.exception.ApiException;
 import io.dmly.invoicer.jwt.provider.TokenProvider;
+import io.dmly.invoicer.exception.handler.AuthorizationExceptionHandler;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -30,6 +30,7 @@ import static io.dmly.invoicer.security.costant.SecurityConstants.PUBLIC_URLS;
 @Slf4j
 public class CustomAuthorizationFilter extends OncePerRequestFilter {
     private final TokenProvider tokenProvider;
+    private final AuthorizationExceptionHandler authorizationExceptionHandler;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -43,11 +44,10 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
             Authentication authentication = tokenProvider.getAuthentication(email, authorities, request);
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
-
         } catch (Exception e) {
             SecurityContextHolder.clearContext();
             log.error("Authentication error", e);
-            //handle
+            authorizationExceptionHandler.handle(response, e);
         }
         filterChain.doFilter(request, response);
     }
@@ -55,7 +55,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         if (PUBLIC_URLS.contains(request.getRequestURI()) || HttpMethod.OPTIONS.name().equals(request.getMethod())) {
-            return false;
+            return true;
         }
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         return authHeader == null || !authHeader.startsWith(AUTH_TOKEN_PREFIX);

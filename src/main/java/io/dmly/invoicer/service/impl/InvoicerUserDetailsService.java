@@ -40,6 +40,6 @@ public class InvoicerUserDetailsService implements UserDetailsService {
             throw new ApiException(String.format("Cannot find role by user id %s", userId));
         }
 
-        return new InvoicerUserDetails(user.get(), role.get().getPermission());
+        return new InvoicerUserDetails(user.get(), role.get());
     }
 }

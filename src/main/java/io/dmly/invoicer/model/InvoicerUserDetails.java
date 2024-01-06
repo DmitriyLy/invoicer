@@ -1,6 +1,7 @@
 package io.dmly.invoicer.model;
 
 import io.dmly.invoicer.utils.PermissionUtils;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -8,13 +9,14 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 
 @RequiredArgsConstructor
+@Getter
 public class InvoicerUserDetails implements UserDetails {
     private final User user;
-    private final String permissions;
+    private final Role role;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return PermissionUtils.getAuthorities(permissions);
+        return PermissionUtils.getAuthorities(role);
     }
 
     @Override

@@ -12,6 +12,7 @@ import io.dmly.invoicer.model.InvoicerUserDetails;
 import io.dmly.invoicer.model.Role;
 import io.dmly.invoicer.model.User;
 import io.dmly.invoicer.service.RoleService;
+import io.dmly.invoicer.service.UserService;
 import io.dmly.invoicer.utils.PermissionUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 
@@ -37,6 +39,7 @@ public class TokenProviderImpl implements TokenProvider {
     public static final String AUTHORITIES = "authorities";
 
     private final RoleService roleService;
+    private final UserDetailsService userDetailsService;
 
     @Value("${jwt.secret:YUnhnded898b8HUY76g78}")
     private String secret;
@@ -84,7 +87,7 @@ public class TokenProviderImpl implements TokenProvider {
 
     @Override
     public Authentication getAuthentication(String email, List<GrantedAuthority> authorities, HttpServletRequest request) {
-        var authenticationToken = new UsernamePasswordAuthenticationToken(email, null, authorities);
+        var authenticationToken = new UsernamePasswordAuthenticationToken(userDetailsService.loadUserByUsername(email), null, authorities);
         authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
         return authenticationToken;
     }

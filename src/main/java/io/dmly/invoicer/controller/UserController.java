@@ -2,13 +2,16 @@ package io.dmly.invoicer.controller;
 
 import io.dmly.invoicer.entitymapper.UserDtoMapper;
 import io.dmly.invoicer.jwt.provider.TokenProvider;
+import io.dmly.invoicer.model.InvoicerUserDetails;
 import io.dmly.invoicer.model.User;
 import io.dmly.invoicer.model.form.LoginForm;
 import io.dmly.invoicer.response.HttpResponse;
 import io.dmly.invoicer.service.UserService;
+import io.dmly.invoicer.utils.HttpResponseProvider;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,7 +22,6 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -33,11 +35,13 @@ public class UserController {
     private final AuthenticationManager authenticationManager;
     private final UserDtoMapper userDtoMapper;
     private final TokenProvider tokenProvider;
+    private final HttpResponseProvider httpResponseProvider;
 
     @PostMapping(path = "/login")
-    public ResponseEntity<HttpResponse> login(@RequestBody LoginForm loginForm) {
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginForm.getEmail(), loginForm.getPassword()));
-        User user = userService.getUserByEmail(loginForm.getEmail());
+    public ResponseEntity<HttpResponse> login(@RequestBody @Valid LoginForm loginForm) {
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginForm.getEmail(), loginForm.getPassword()));
+        User user = getUserFromAuthentication(authentication);
+
         HttpResponse userResponse;
 
         if (user.isUsingMfa()) {
@@ -61,7 +65,7 @@ public class UserController {
 
     @GetMapping("/profile")
     public ResponseEntity<HttpResponse> profile(Authentication authentication) {
-        User user = userService.getUserByEmail((String) authentication.getPrincipal());
+        User user = getUserFromAuthentication(authentication);
         return ResponseEntity
                 .ok(getUserResponse(user, "User profile provided", HttpStatus.OK));
     }
@@ -101,22 +105,19 @@ public class UserController {
     }
 
     private HttpResponse getUserResponse(User user, Map<String, Object> data, String message, HttpStatus status) {
-        Optional<User> optionalUser = Optional.ofNullable(user);
+        Map<String, Object> responseData = new HashMap<>();
 
-        HttpResponse response = HttpResponse.builder()
-                .timestamp(LocalDateTime.now().toString())
-                .message(message)
-                .status(status)
-                .statusCode(status.value())
-                .build();
+        Optional.ofNullable(user).ifPresent(value -> responseData.put("user", userDtoMapper.fromUser(value)));
 
-        if (optionalUser.isPresent() || MapUtils.isNotEmpty(data)) {
-            Map<String, Object> responseData = new HashMap<>(data);
-            optionalUser.ifPresent(value -> responseData.put("user", userDtoMapper.fromUser(value)));
-            response.setData(responseData);
+        if (MapUtils.isNotEmpty(data)) {
+            responseData.putAll(data);
         }
 
-        return response;
+        return httpResponseProvider.getHttpResponse(responseData, message, StringUtils.EMPTY, status);
+    }
+
+    private User getUserFromAuthentication(Authentication authentication) {
+        return ((InvoicerUserDetails) authentication.getPrincipal()).getUser();
     }
 
 }
