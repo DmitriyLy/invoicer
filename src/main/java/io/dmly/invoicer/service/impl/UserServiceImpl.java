@@ -2,8 +2,11 @@ package io.dmly.invoicer.service.impl;
 
 import io.dmly.invoicer.exception.ApiException;
 import io.dmly.invoicer.model.User;
+import io.dmly.invoicer.model.enumaration.VerificationUrlType;
 import io.dmly.invoicer.repository.UserRepository;
+import io.dmly.invoicer.service.EmailService;
 import io.dmly.invoicer.service.UserService;
+import io.dmly.invoicer.service.VerificationUrlGenerator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -18,6 +21,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository<User> userRepository;
+    private final VerificationUrlGenerator verificationUrlGenerator;
+    private final EmailService emailService;
 
     @Override
     public User createUser(User user) {
@@ -50,6 +55,15 @@ public class UserServiceImpl implements UserService {
 
         userRepository.deleteVerificationCodeByUserId(user.get().getId());
         return user.get();
+    }
+
+    @Override
+    public void resetPassword(String email) {
+        User user = getUserByEmail(email);
+        String url = verificationUrlGenerator.generateVerificationUrl(VerificationUrlType.PASSWORD);
+        Date expirationDate = DateUtils.addDays(new Date(), 1);
+        userRepository.updateResetPasswordVerification(user, url, expirationDate);
+        emailService.sendVerificationUrl(user, url, VerificationUrlType.PASSWORD);
     }
 
     protected void sendCodeViaSms(User userDto, String verificationCode, Date codeExpirationDate) {

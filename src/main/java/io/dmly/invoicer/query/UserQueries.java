@@ -11,9 +11,9 @@ public class UserQueries {
     public static final String SELECT_USER_BY_EMAIL = "SELECT * FROM Users WHERE email = :email";
     public static final String UPSERT_VERIFICATION_CODE_FOR_USER = """
             INSERT INTO TwoFactorVerifications (user_id, code, expiration_date) 
-            VALUES(:userId, :code, TO_TIMESTAMP(:expirationDate, 'YYYY-MM-DD HH:MI:SS')) 
+            VALUES(:userId, :code, TO_TIMESTAMP(:expirationDate, 'YYYY-MM-DD HH24:MI:SS')) 
             ON CONFLICT(user_id) DO 
-            UPDATE SET code=:code, expiration_date=TO_TIMESTAMP(:expirationDate, 'YYYY-MM-DD HH:MI:SS')
+            UPDATE SET code=:code, expiration_date=TO_TIMESTAMP(:expirationDate, 'YYYY-MM-DD HH24:MI:SS')
             """;
     public static final String SELECT_USER_BY_EMAIL_AND_VALID_CODE = """
             SELECT Users.*
@@ -24,4 +24,10 @@ public class UserQueries {
               AND codes.expiration_date >= now();
             """;
     public static final String DELETE_VERIFICATION_CODE_BY_USER_ID = "DELETE FROM TwoFactorVerifications WHERE user_id = :userId";
+    public static final String UPSERT_RESET_PASSWORD_VERIFICATION_FOR_USER = """
+            INSERT INTO ResetPasswordVerifications (user_id, url, expiration_date)
+            VALUES(:userId, :url, TO_TIMESTAMP(:expirationDate, 'YYYY-MM-DD HH24:MI:SS'))
+            ON CONFLICT(user_id) DO
+            UPDATE SET url=:url, expiration_date=TO_TIMESTAMP(:expirationDate, 'YYYY-MM-DD HH24:MI:SS')
+            """;
 }

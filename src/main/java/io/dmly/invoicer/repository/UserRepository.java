@@ -17,4 +17,5 @@ public interface UserRepository <T extends User> {
     void updateVerificationCodeForUser(User user, String verificationCode, Date codeExpirationDate);
     Optional<T> getUserByEmailAndValidCode(String email, String code);
     void deleteVerificationCodeByUserId(Long userId);
+    void updateResetPasswordVerification(User user, String url, Date codeExpirationDate);
 }

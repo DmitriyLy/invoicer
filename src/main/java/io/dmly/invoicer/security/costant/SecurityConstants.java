@@ -7,6 +7,7 @@ public class SecurityConstants {
     public static final List<String> PUBLIC_URLS = List.of(
             "/api/v1/user/login",
             "/api/v1/user/verify",
-            "/api/v1/user/register"
+            "/api/v1/user/register",
+            "/api/v1/user/reset-password"
     );
 }

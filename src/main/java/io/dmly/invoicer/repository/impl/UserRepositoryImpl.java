@@ -30,7 +30,7 @@ import static io.dmly.invoicer.query.UserQueries.*;
 @RequiredArgsConstructor
 @Slf4j
 public class UserRepositoryImpl implements UserRepository<User> {
-    private static final String SQL_DATE_FORMAT = "yyyy-MM-dd hh:mm:ss";
+    private static final String SQL_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final RoleRepository<Role> roleRepository;
     private final PasswordEncoder passwordEncoder;
@@ -138,6 +138,20 @@ public class UserRepositoryImpl implements UserRepository<User> {
     public void deleteVerificationCodeByUserId(Long userId) {
         try {
             jdbcTemplate.update(DELETE_VERIFICATION_CODE_BY_USER_ID, Map.of("userId", userId));
+        } catch (Exception e) {
+            log.error("An error occurred.", e);
+            throw new ApiException("An error occurred. Please try later", e);
+        }
+    }
+
+    @Override
+    public void updateResetPasswordVerification(User user, String url, Date codeExpirationDate) {
+        try {
+            jdbcTemplate.update(UPSERT_RESET_PASSWORD_VERIFICATION_FOR_USER, Map.of(
+                    "userId", user.getId(),
+                    "url", url,
+                    "expirationDate", DateFormatUtils.format(codeExpirationDate, SQL_DATE_FORMAT)
+            ));
         } catch (Exception e) {
             log.error("An error occurred.", e);
             throw new ApiException("An error occurred. Please try later", e);

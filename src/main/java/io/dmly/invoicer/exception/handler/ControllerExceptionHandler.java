@@ -1,5 +1,7 @@
 package io.dmly.invoicer.exception.handler;
 
+import io.dmly.invoicer.exception.ApiException;
+import io.dmly.invoicer.response.HttpResponse;
 import io.dmly.invoicer.utils.HttpResponseProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.web.servlet.error.ErrorController;
@@ -9,6 +11,7 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
@@ -37,5 +40,13 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler i
 
         HttpStatus httpStatus = HttpStatus.resolve(statusCode.value());
         return new ResponseEntity<>(httpResponseProvider.getHttpResponse(validationMessage, httpStatus), httpStatus);
+    }
+
+    @ExceptionHandler(ApiException.class)
+    public ResponseEntity<HttpResponse> handleApiException(ApiException exception) {
+        return new ResponseEntity<>(
+                httpResponseProvider.getHttpResponse(exception.getMessage(), HttpStatus.BAD_REQUEST),
+                HttpStatus.BAD_REQUEST
+        );
     }
 }

@@ -46,7 +46,7 @@ public class UserController {
 
         if (user.isUsingMfa()) {
             userService.sendVerificationCode(user);
-            userResponse = getUserResponse(user, "Verification code has been sent", HttpStatus.OK);
+            userResponse = getResponse(user, "Verification code has been sent", HttpStatus.OK);
         } else {
             userResponse = getLoginSuccessUserResponse(user);
         }
@@ -60,14 +60,14 @@ public class UserController {
         User storedUser = userService.createUser(user);
         return ResponseEntity
                 .created(getUrI(storedUser.getId()))
-                .body(getUserResponse(storedUser,"User created", HttpStatus.CREATED));
+                .body(getResponse(storedUser,"User created", HttpStatus.CREATED));
     }
 
     @GetMapping("/profile")
     public ResponseEntity<HttpResponse> profile(Authentication authentication) {
         User user = getUserFromAuthentication(authentication);
         return ResponseEntity
-                .ok(getUserResponse(user, "User profile provided", HttpStatus.OK));
+                .ok(getResponse(user, "User profile provided", HttpStatus.OK));
     }
 
     @GetMapping(path = "/verify/{email}/{code}")
@@ -76,6 +76,12 @@ public class UserController {
         User user = userService.getUserByEmailAndValidCode(email, code);
         return ResponseEntity
                 .ok(getLoginSuccessUserResponse(user));
+    }
+
+    @GetMapping(path = "/reset-password/{email}")
+    public ResponseEntity<HttpResponse> resetPassword(@PathVariable String email) {
+        userService.resetPassword(email);
+        return ResponseEntity.ok(getResponse("Reset password link sent to your email", HttpStatus.OK));
     }
 
     private URI getUrI(Long userId) {
@@ -97,14 +103,18 @@ public class UserController {
     }
 
     private HttpResponse getLoginSuccessUserResponse(User user) {
-        return getUserResponse(user, getTokensMap(user), "Login success", HttpStatus.OK);
+        return getResponse(user, getTokensMap(user), "Login success", HttpStatus.OK);
     }
 
-    private HttpResponse getUserResponse(User user, String message, HttpStatus status) {
-        return getUserResponse(user, Collections.emptyMap(), message, status);
+    private HttpResponse getResponse(User user, String message, HttpStatus status) {
+        return getResponse(user, Collections.emptyMap(), message, status);
     }
 
-    private HttpResponse getUserResponse(User user, Map<String, Object> data, String message, HttpStatus status) {
+    private HttpResponse getResponse(String message, HttpStatus status) {
+        return getResponse(null, Collections.emptyMap(), message, status);
+    }
+
+    private HttpResponse getResponse(User user, Map<String, Object> data, String message, HttpStatus status) {
         Map<String, Object> responseData = new HashMap<>();
 
         Optional.ofNullable(user).ifPresent(value -> responseData.put("user", userDtoMapper.fromUser(value)));

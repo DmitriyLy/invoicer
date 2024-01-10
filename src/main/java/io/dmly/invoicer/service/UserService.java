@@ -7,4 +7,5 @@ public interface UserService {
     User getUserByEmail(String email);
     void sendVerificationCode(User userDto);
     User getUserByEmailAndValidCode(String email, String code);
+    void resetPassword(String email);
 }
