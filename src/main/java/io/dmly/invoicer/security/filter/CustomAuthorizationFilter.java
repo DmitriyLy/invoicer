@@ -54,11 +54,20 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        if (PUBLIC_URLS.contains(request.getRequestURI()) || HttpMethod.OPTIONS.name().equals(request.getMethod())) {
+        if (isPublicUrl(request.getRequestURI()) || HttpMethod.OPTIONS.name().equals(request.getMethod())) {
             return true;
         }
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         return authHeader == null || !authHeader.startsWith(AUTH_TOKEN_PREFIX);
+    }
+
+    private boolean isPublicUrl(String requestUri) {
+        for (String publicUrl : PUBLIC_URLS) {
+            if (requestUri.contains(publicUrl)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private String getToken(HttpServletRequest request) {

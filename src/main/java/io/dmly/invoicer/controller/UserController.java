@@ -4,6 +4,7 @@ import io.dmly.invoicer.entitymapper.UserDtoMapper;
 import io.dmly.invoicer.jwt.provider.TokenProvider;
 import io.dmly.invoicer.model.InvoicerUserDetails;
 import io.dmly.invoicer.model.User;
+import io.dmly.invoicer.model.form.ChangePasswordForm;
 import io.dmly.invoicer.model.form.LoginForm;
 import io.dmly.invoicer.response.HttpResponse;
 import io.dmly.invoicer.service.UserService;
@@ -82,6 +83,18 @@ public class UserController {
     public ResponseEntity<HttpResponse> resetPassword(@PathVariable String email) {
         userService.resetPassword(email);
         return ResponseEntity.ok(getResponse("Reset password link sent to your email", HttpStatus.OK));
+    }
+
+    @GetMapping(path = "/verify-password-reset/{key}")
+    public ResponseEntity<HttpResponse> verifyPasswordReset(@PathVariable String key) {
+        User user = userService.verifyPasswordReset(key);
+        return ResponseEntity.ok(getResponse(user, "Please specify your new password", HttpStatus.OK));
+    }
+
+    @PostMapping(path = "/change-password/{key}")
+    public ResponseEntity<HttpResponse> changePassword(@PathVariable String key, @RequestBody ChangePasswordForm changePasswordData) {
+        userService.changePassword(key, changePasswordData);
+        return ResponseEntity.ok(getResponse("Your password successfully changed. Please login", HttpStatus.OK));
     }
 
     private URI getUrI(Long userId) {

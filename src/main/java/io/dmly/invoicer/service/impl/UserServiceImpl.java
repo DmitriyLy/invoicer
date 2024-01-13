@@ -1,8 +1,10 @@
 package io.dmly.invoicer.service.impl;
 
 import io.dmly.invoicer.exception.ApiException;
+import io.dmly.invoicer.model.ResetPasswordVerificationEntity;
 import io.dmly.invoicer.model.User;
 import io.dmly.invoicer.model.enumaration.VerificationUrlType;
+import io.dmly.invoicer.model.form.ChangePasswordForm;
 import io.dmly.invoicer.repository.UserRepository;
 import io.dmly.invoicer.service.EmailService;
 import io.dmly.invoicer.service.UserService;
@@ -10,9 +12,11 @@ import io.dmly.invoicer.service.VerificationUrlGenerator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Optional;
 
@@ -60,10 +64,46 @@ public class UserServiceImpl implements UserService {
     @Override
     public void resetPassword(String email) {
         User user = getUserByEmail(email);
-        String url = verificationUrlGenerator.generateVerificationUrl(VerificationUrlType.PASSWORD);
+        String key = verificationUrlGenerator.getUniqueKey();
+        String url = verificationUrlGenerator.generateVerificationUrl(key, VerificationUrlType.PASSWORD);
         Date expirationDate = DateUtils.addDays(new Date(), 1);
-        userRepository.updateResetPasswordVerification(user, url, expirationDate);
+        userRepository.updateResetPasswordVerification(user, key, expirationDate);
         emailService.sendVerificationUrl(user, url, VerificationUrlType.PASSWORD);
+    }
+
+    @Override
+    public User verifyPasswordReset(String key) {
+        Optional<ResetPasswordVerificationEntity> optionalEntity = userRepository.getResetPasswordVerificationEntityByKey(key);
+        if (optionalEntity.isEmpty()) {
+            throw new ApiException("Cannot find record by specified key");
+        }
+
+        var resetPasswordVerificationEntity = optionalEntity.get();
+
+        if (LocalDateTime.now().isAfter(resetPasswordVerificationEntity.expirationDate())) {
+            throw new ApiException("Password reset request has expired. Please repeat operation.");
+        }
+
+        return userRepository.get(resetPasswordVerificationEntity.userId());
+    }
+
+    @Override
+    public void changePassword(String key, ChangePasswordForm changePasswordData) {
+        if (StringUtils.isEmpty(key)) {
+            throw new ApiException("Key cannot be empty");
+        }
+
+        if (changePasswordData == null ||
+                StringUtils.isEmpty(changePasswordData.password()) ||
+                StringUtils.isEmpty(changePasswordData.password())) {
+            throw new ApiException("Password data not specified.");
+        }
+
+        if (!StringUtils.equals(changePasswordData.password(), changePasswordData.confirmation())) {
+            throw new ApiException("Password and confirmation do not match.");
+        }
+
+        userRepository.savePasswordByResetPasswordKey(key, changePasswordData.password());
     }
 
     protected void sendCodeViaSms(User userDto, String verificationCode, Date codeExpirationDate) {

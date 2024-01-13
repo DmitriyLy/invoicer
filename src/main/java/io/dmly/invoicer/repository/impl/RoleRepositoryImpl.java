@@ -16,7 +16,7 @@ import java.util.Optional;
 
 import static io.dmly.invoicer.query.RoleQueries.SELECT_ROLE_BY_NAME_QUERY;
 import static io.dmly.invoicer.query.RoleQueries.SELECT_ROLE_BY_USER_ID;
-import static io.dmly.invoicer.query.UserQueries.INSERT_SET_ROLE_FOR_USER;
+import static io.dmly.invoicer.query.UserQueries.INSERT_SET_ROLE_FOR_USER_QUERY;
 
 @Repository
 @RequiredArgsConstructor
@@ -55,7 +55,7 @@ public class RoleRepositoryImpl implements RoleRepository<Role> {
         log.info("Adding role {} to a user with id {}", roleName, userId);
         try {
             Role role = jdbcTemplate.queryForObject(SELECT_ROLE_BY_NAME_QUERY, Map.of("roleName", roleName), roleRowMapper);
-            jdbcTemplate.update(INSERT_SET_ROLE_FOR_USER,
+            jdbcTemplate.update(INSERT_SET_ROLE_FOR_USER_QUERY,
                     Map.of("userId", userId,
                             "roleId", Objects.requireNonNull(role).getId())
             );

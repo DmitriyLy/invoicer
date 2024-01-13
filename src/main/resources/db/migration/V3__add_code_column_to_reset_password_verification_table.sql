@@ -1,0 +1,2 @@
+ALTER TABLE ResetPasswordVerifications
+ADD COLUMN key VARCHAR(255) NOT NULL UNIQUE DEFAULT '';

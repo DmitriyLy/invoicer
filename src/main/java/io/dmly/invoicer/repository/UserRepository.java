@@ -1,5 +1,6 @@
 package io.dmly.invoicer.repository;
 
+import io.dmly.invoicer.model.ResetPasswordVerificationEntity;
 import io.dmly.invoicer.model.User;
 
 import java.util.Collection;
@@ -17,5 +18,7 @@ public interface UserRepository <T extends User> {
     void updateVerificationCodeForUser(User user, String verificationCode, Date codeExpirationDate);
     Optional<T> getUserByEmailAndValidCode(String email, String code);
     void deleteVerificationCodeByUserId(Long userId);
-    void updateResetPasswordVerification(User user, String url, Date codeExpirationDate);
+    void updateResetPasswordVerification(User user, String key, Date codeExpirationDate);
+    Optional<ResetPasswordVerificationEntity> getResetPasswordVerificationEntityByKey(String key);
+    void savePasswordByResetPasswordKey(String key, String password);
 }

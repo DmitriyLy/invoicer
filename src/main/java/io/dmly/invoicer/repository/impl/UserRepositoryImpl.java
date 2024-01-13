@@ -1,11 +1,13 @@
 package io.dmly.invoicer.repository.impl;
 
 import io.dmly.invoicer.exception.ApiException;
+import io.dmly.invoicer.model.ResetPasswordVerificationEntity;
 import io.dmly.invoicer.model.Role;
 import io.dmly.invoicer.model.User;
 import io.dmly.invoicer.model.enumaration.VerificationUrlType;
 import io.dmly.invoicer.repository.RoleRepository;
 import io.dmly.invoicer.repository.UserRepository;
+import io.dmly.invoicer.rowmapper.ResetPasswordVerificationEntityRowMapper;
 import io.dmly.invoicer.rowmapper.UserRowMapper;
 import io.dmly.invoicer.service.EmailService;
 import io.dmly.invoicer.service.VerificationUrlGenerator;
@@ -37,12 +39,13 @@ public class UserRepositoryImpl implements UserRepository<User> {
     private final VerificationUrlGenerator verificationUrlGenerator;
     private final EmailService emailService;
     private final UserRowMapper userRowMapper;
+    private final ResetPasswordVerificationEntityRowMapper resetPasswordVerificationEntityRowMapper;
 
     @Override
     public Optional<User> getUserByEmail(String email) {
         User user = null;
         try {
-            user = jdbcTemplate.queryForObject(SELECT_USER_BY_EMAIL, Map.of("email", email), userRowMapper);
+            user = jdbcTemplate.queryForObject(SELECT_USER_BY_EMAIL_QUERY, Map.of("email", email), userRowMapper);
         } catch (EmptyResultDataAccessException e) {
             log.error("Cannot find a user by email {}", email);
         }
@@ -66,7 +69,7 @@ public class UserRepositoryImpl implements UserRepository<User> {
 
             String verificationUrl = verificationUrlGenerator.generateVerificationUrl(VerificationUrlType.ACCOUNT);
 
-            jdbcTemplate.update(INSERT_ACCOUNT_VERIFICATION_URL, Map.of(
+            jdbcTemplate.update(INSERT_ACCOUNT_VERIFICATION_URL_QUERY, Map.of(
                     "userId", user.getId(),
                     "url", verificationUrl
             ));
@@ -91,7 +94,16 @@ public class UserRepositoryImpl implements UserRepository<User> {
 
     @Override
     public User get(Long id) {
-        return null;
+        try {
+            return jdbcTemplate.queryForObject(SELECT_USER_BY_ID_QUERY,
+                    Map.of("id", id),
+                    userRowMapper
+
+            );
+        } catch (EmptyResultDataAccessException exception) {
+            log.error("Cannot find user by id {}", id);
+            throw new ApiException("Cannot find user by specified id");
+        }
     }
 
     @Override
@@ -107,7 +119,7 @@ public class UserRepositoryImpl implements UserRepository<User> {
     @Override
     public void updateVerificationCodeForUser(User user, String verificationCode, Date codeExpirationDate) {
         try {
-            jdbcTemplate.update(UPSERT_VERIFICATION_CODE_FOR_USER, Map.of(
+            jdbcTemplate.update(UPSERT_VERIFICATION_CODE_FOR_USER_QUERY, Map.of(
                     "userId", user.getId(),
                     "code", verificationCode,
                     "expirationDate", DateFormatUtils.format(codeExpirationDate, SQL_DATE_FORMAT)
@@ -122,7 +134,7 @@ public class UserRepositoryImpl implements UserRepository<User> {
     public Optional<User> getUserByEmailAndValidCode(String email, String code) {
         User user = null;
         try {
-            user = jdbcTemplate.queryForObject(SELECT_USER_BY_EMAIL_AND_VALID_CODE,
+            user = jdbcTemplate.queryForObject(SELECT_USER_BY_EMAIL_AND_VALID_CODE_QUERY,
                     Map.of(
                             "email", email,
                             "code", code
@@ -137,7 +149,7 @@ public class UserRepositoryImpl implements UserRepository<User> {
     @Override
     public void deleteVerificationCodeByUserId(Long userId) {
         try {
-            jdbcTemplate.update(DELETE_VERIFICATION_CODE_BY_USER_ID, Map.of("userId", userId));
+            jdbcTemplate.update(DELETE_VERIFICATION_CODE_BY_USER_ID_QUERY, Map.of("userId", userId));
         } catch (Exception e) {
             log.error("An error occurred.", e);
             throw new ApiException("An error occurred. Please try later", e);
@@ -145,17 +157,45 @@ public class UserRepositoryImpl implements UserRepository<User> {
     }
 
     @Override
-    public void updateResetPasswordVerification(User user, String url, Date codeExpirationDate) {
+    public void updateResetPasswordVerification(User user, String key, Date codeExpirationDate) {
         try {
-            jdbcTemplate.update(UPSERT_RESET_PASSWORD_VERIFICATION_FOR_USER, Map.of(
+            jdbcTemplate.update(UPSERT_RESET_PASSWORD_VERIFICATION_FOR_USER_QUERY, Map.of(
                     "userId", user.getId(),
-                    "url", url,
+                    "key", key,
                     "expirationDate", DateFormatUtils.format(codeExpirationDate, SQL_DATE_FORMAT)
             ));
         } catch (Exception e) {
             log.error("An error occurred.", e);
             throw new ApiException("An error occurred. Please try later", e);
         }
+    }
+
+    @Override
+    public Optional<ResetPasswordVerificationEntity> getResetPasswordVerificationEntityByKey(String key) {
+        try {
+            return Optional.ofNullable(
+                    jdbcTemplate.queryForObject(SELECT_RESET_PASSWORD_VERIFICATION_ENTITY_QUERY,
+                            Map.of("key", key),
+                            resetPasswordVerificationEntityRowMapper
+                    )
+            );
+        } catch (EmptyResultDataAccessException exception) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public void savePasswordByResetPasswordKey(String key, String password) {
+        int updated = jdbcTemplate.update(UPDATE_USER_PASSWORD_BY_RESET_PASSWORD_KEY_QUERY, Map.of(
+                "key", key,
+                "password", passwordEncoder.encode(password)
+        ));
+
+        if (updated == 0) {
+            throw new ApiException("Nothing was update. Please check reset request key");
+        }
+
+        jdbcTemplate.update(DELETE_RESET_PASSWORD_REQUEST_ENTITY_BY_KEY_QUERY, Map.of("key", key));
     }
 
     private Integer getEmailCount(String email) {

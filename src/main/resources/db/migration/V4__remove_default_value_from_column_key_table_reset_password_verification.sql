@@ -1,0 +1,3 @@
+ALTER TABLE ResetPasswordVerifications
+ALTER COLUMN key
+DROP DEFAULT;

@@ -13,12 +13,17 @@ public class VerificationUrlGeneratorImpl implements VerificationUrlGenerator {
     public String generateVerificationUrl(String key, VerificationUrlType type) {
         return ServletUriComponentsBuilder
                 .fromCurrentContextPath()
-                .path("/user/verify/" + type.getType() + "/" + key)
+                .path("/api/v1/user/verify/" + type.getType() + "/" + key)
                 .toUriString();
     }
 
     @Override
     public String generateVerificationUrl(VerificationUrlType type) {
-        return generateVerificationUrl(UUID.randomUUID().toString(), type);
+        return generateVerificationUrl(getUniqueKey(), type);
+    }
+
+    @Override
+    public String getUniqueKey() {
+        return UUID.randomUUID().toString();
     }
 }
