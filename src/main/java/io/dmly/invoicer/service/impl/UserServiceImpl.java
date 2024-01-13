@@ -106,6 +106,22 @@ public class UserServiceImpl implements UserService {
         userRepository.savePasswordByResetPasswordKey(key, changePasswordData.password());
     }
 
+    @Override
+    public void activateAccount(String email) {
+        Optional<User> optionalUser = userRepository.getUserByEmail(email);
+        if (optionalUser.isEmpty()) {
+            throw new ApiException("Cannot find user by specified email: " + email);
+        }
+
+        User user = optionalUser.get();
+
+        if (user.isEnabled()) {
+            throw new ApiException("Account has been already activated");
+        }
+
+        userRepository.setUserAccountEnabled(user.getId());
+    }
+
     protected void sendCodeViaSms(User userDto, String verificationCode, Date codeExpirationDate) {
         String message = String.format("Invoicer verification code: %s, active till %s", verificationCode, codeExpirationDate);
         log.info("-----> Sending verification code in SMS >>>>>>>> " + message);

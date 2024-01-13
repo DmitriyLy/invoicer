@@ -1,0 +1,785 @@
+{
+	"version": 1,
+	"collections": [
+		{
+			"id": "5b7294de-5d5b-4ab8-b39e-c0faac4289c5",
+			"uid": "0-5b7294de-5d5b-4ab8-b39e-c0faac4289c5",
+			"name": "Invoicer",
+			"description": null,
+			"auth": null,
+			"events": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "56cfe241-3abb-4bdc-a282-319efadbc410",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "0dc835d4-1b7b-4b27-a91a-9d1c45598d55",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"variables": [
+				{
+					"key": "access_token_1",
+					"value": "",
+					"disabled": false
+				},
+				{
+					"key": "reset_password_key",
+					"value": "",
+					"type": "default",
+					"disabled": false
+				},
+				{
+					"key": "email_check_account_verification",
+					"value": "",
+					"disabled": false
+				}
+			],
+			"order": [
+				"883a86ce-e304-4594-a9f0-a4d62edcb299",
+				"2d578724-0820-43c9-a91b-cc9e6adc508f",
+				"efabd33a-3102-4906-8a27-36c40f3b2e43",
+				"20a785be-6b1a-4c10-a8fd-5abd4fd3e388",
+				"f1644829-dce6-4dea-8a60-310fe4db7649",
+				"efca2258-1265-408b-9904-e835dfddb014",
+				"0f423ca3-2a90-44f5-a3d1-32bd955e389d",
+				"9408661a-7d49-4828-a92e-b616429ad73c",
+				"594feee1-f6d6-4beb-b64a-7329d18310b2",
+				"057a735f-a6b5-4e21-8d78-c7b1f91b96f9",
+				"9a4fe578-9e23-45e0-b766-34c010a81ebb",
+				"f794ac31-db54-4741-bdab-3c6e0f79f04f"
+			],
+			"folders_order": [
+				"4fe96884-f2d9-469b-96cd-460db53bb136"
+			],
+			"protocolProfileBehavior": {},
+			"createdAt": "2023-12-30T16:53:10.558Z",
+			"folders": [
+				{
+					"id": "4fe96884-f2d9-469b-96cd-460db53bb136",
+					"uid": "0-4fe96884-f2d9-469b-96cd-460db53bb136",
+					"name": "Test account verification",
+					"description": null,
+					"auth": null,
+					"events": null,
+					"collection": "5b7294de-5d5b-4ab8-b39e-c0faac4289c5",
+					"folder": null,
+					"order": [
+						"97967428-bd88-4fdb-bb4f-94dd0114ece8",
+						"50a06aaf-c477-4bca-94c4-f8b6a2e73c00",
+						"9c375c20-2a12-4501-8b6a-22909e15e44b",
+						"5f4d8963-10d6-4b3c-b46a-5bff986547d0",
+						"2dc2a66a-7fb4-4c09-a406-0659688d7251"
+					],
+					"folders_order": [],
+					"owner": "0",
+					"protocolProfileBehavior": {},
+					"createdAt": "2024-01-13T15:57:26.335Z",
+					"collectionId": "5b7294de-5d5b-4ab8-b39e-c0faac4289c5",
+					"folderId": "4fe96884-f2d9-469b-96cd-460db53bb136"
+				}
+			],
+			"requests": [
+				{
+					"id": "057a735f-a6b5-4e21-8d78-c7b1f91b96f9",
+					"uid": "0-057a735f-a6b5-4e21-8d78-c7b1f91b96f9",
+					"name": "Request reset password - 200 OK",
+					"url": "http://localhost:8080/api/v1/user/reset-password/test@test.com",
+					"description": null,
+					"data": null,
+					"dataOptions": null,
+					"dataMode": null,
+					"headerData": null,
+					"method": "GET",
+					"pathVariableData": [],
+					"queryParams": [],
+					"auth": {
+						"type": "noauth",
+						"noauth": []
+					},
+					"events": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "1edacfe3-8d6d-4071-bf0b-5e6cd555e2ca",
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {",
+									"    pm.response.to.have.status(200);",
+									"    let response = pm.response.json();",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"folder": null,
+					"responses_order": [],
+					"preRequestScript": null,
+					"tests": "pm.test(\"Status code is 200\", () => {\n    pm.response.to.have.status(200);\n    let response = pm.response.json();\n});",
+					"currentHelper": null,
+					"helperAttributes": null,
+					"collectionId": "5b7294de-5d5b-4ab8-b39e-c0faac4289c5",
+					"pathVariables": {}
+				},
+				{
+					"id": "0f423ca3-2a90-44f5-a3d1-32bd955e389d",
+					"uid": "0-0f423ca3-2a90-44f5-a3d1-32bd955e389d",
+					"name": "Invalid credentials login",
+					"url": "http://localhost:8080/api/v1/user/login",
+					"description": null,
+					"data": [],
+					"dataOptions": {
+						"raw": {
+							"language": "json"
+						}
+					},
+					"dataMode": "raw",
+					"headerData": null,
+					"method": "POST",
+					"pathVariableData": [],
+					"queryParams": [],
+					"auth": null,
+					"events": null,
+					"folder": null,
+					"responses_order": [],
+					"currentHelper": null,
+					"helperAttributes": null,
+					"collectionId": "5b7294de-5d5b-4ab8-b39e-c0faac4289c5",
+					"rawModeData": "{\n    \"email\": \"{{$timestamp}}\",\n    \"password\": \"{{$timestamp}}\"\n}",
+					"pathVariables": {}
+				},
+				{
+					"id": "20a785be-6b1a-4c10-a8fd-5abd4fd3e388",
+					"uid": "0-20a785be-6b1a-4c10-a8fd-5abd4fd3e388",
+					"name": "Login Copy",
+					"url": "http://localhost:8080/api/v1/user/login",
+					"description": null,
+					"data": [],
+					"dataOptions": {
+						"raw": {
+							"language": "json"
+						}
+					},
+					"dataMode": "raw",
+					"headerData": null,
+					"method": "POST",
+					"pathVariableData": [],
+					"queryParams": [],
+					"auth": null,
+					"events": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3fc7dde5-7ff8-44da-87c2-0a3a5d1157fa",
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {",
+									"    pm.response.to.have.status(200);",
+									"    let response = pm.response.json();",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"folder": null,
+					"responses_order": [],
+					"preRequestScript": null,
+					"tests": "pm.test(\"Status code is 200\", () => {\n    pm.response.to.have.status(200);\n    let response = pm.response.json();\n});",
+					"currentHelper": null,
+					"helperAttributes": null,
+					"collectionId": "5b7294de-5d5b-4ab8-b39e-c0faac4289c5",
+					"rawModeData": "{\n    \"email\": \"test2@test.com\",\n    \"password\": \"123\"\n}",
+					"pathVariables": {}
+				},
+				{
+					"id": "2d578724-0820-43c9-a91b-cc9e6adc508f",
+					"uid": "0-2d578724-0820-43c9-a91b-cc9e6adc508f",
+					"name": "Login",
+					"url": "http://localhost:8080/api/v1/user/login",
+					"description": null,
+					"data": [],
+					"dataOptions": {
+						"raw": {
+							"language": "json"
+						}
+					},
+					"dataMode": "raw",
+					"headerData": null,
+					"method": "POST",
+					"pathVariableData": [],
+					"queryParams": [],
+					"auth": null,
+					"events": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "ea30c32b-887b-41c9-b6f5-87e902593bfd",
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {",
+									"    pm.response.to.have.status(200);",
+									"    let response = pm.response.json();",
+									"    pm.collectionVariables.set(\"access_token_1\", response.data.access_token);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"folder": null,
+					"responses_order": [],
+					"preRequestScript": null,
+					"tests": "pm.test(\"Status code is 200\", () => {\n    pm.response.to.have.status(200);\n    let response = pm.response.json();\n    pm.collectionVariables.set(\"access_token_1\", response.data.access_token);\n});",
+					"currentHelper": null,
+					"helperAttributes": null,
+					"collectionId": "5b7294de-5d5b-4ab8-b39e-c0faac4289c5",
+					"rawModeData": "{\n    \"email\": \"test@test.com\",\n    \"password\": \"111\"\n}",
+					"pathVariables": {}
+				},
+				{
+					"id": "2dc2a66a-7fb4-4c09-a406-0659688d7251",
+					"uid": "0-2dc2a66a-7fb4-4c09-a406-0659688d7251",
+					"name": "Activate user account Copy",
+					"url": "http://localhost:8080/api/v1/user/activate/account/{{email_check_account_verification}}",
+					"description": null,
+					"data": null,
+					"dataOptions": null,
+					"dataMode": null,
+					"headerData": null,
+					"method": "POST",
+					"pathVariableData": [],
+					"queryParams": [],
+					"auth": null,
+					"events": null,
+					"folder": "4fe96884-f2d9-469b-96cd-460db53bb136",
+					"responses_order": [],
+					"currentHelper": null,
+					"helperAttributes": null,
+					"collectionId": "5b7294de-5d5b-4ab8-b39e-c0faac4289c5",
+					"pathVariables": {}
+				},
+				{
+					"id": "50a06aaf-c477-4bca-94c4-f8b6a2e73c00",
+					"uid": "0-50a06aaf-c477-4bca-94c4-f8b6a2e73c00",
+					"name": "Login",
+					"url": "http://localhost:8080/api/v1/user/login",
+					"description": null,
+					"data": [],
+					"dataOptions": {
+						"raw": {
+							"language": "json"
+						}
+					},
+					"dataMode": "raw",
+					"headerData": null,
+					"method": "POST",
+					"pathVariableData": [],
+					"queryParams": [],
+					"auth": null,
+					"events": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "4a98b08a-96ff-4091-83ec-e9055936c555",
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {",
+									"    pm.response.to.have.status(200);",
+									"    let response = pm.response.json();",
+									"    pm.collectionVariables.set(\"access_token_1\", response.data.access_token);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"folder": "4fe96884-f2d9-469b-96cd-460db53bb136",
+					"responses_order": [],
+					"preRequestScript": null,
+					"tests": "pm.test(\"Status code is 200\", () => {\n    pm.response.to.have.status(200);\n    let response = pm.response.json();\n    pm.collectionVariables.set(\"access_token_1\", response.data.access_token);\n});",
+					"currentHelper": null,
+					"helperAttributes": null,
+					"collectionId": "5b7294de-5d5b-4ab8-b39e-c0faac4289c5",
+					"rawModeData": "{\n    \"email\": \"{{email_check_account_verification}}\",\n    \"password\": \"123\"\n}",
+					"pathVariables": {}
+				},
+				{
+					"id": "594feee1-f6d6-4beb-b64a-7329d18310b2",
+					"uid": "0-594feee1-f6d6-4beb-b64a-7329d18310b2",
+					"name": "Request reset password - 400 Bad Request",
+					"url": "http://localhost:8080/api/v1/user/reset-password/test@test.com777777",
+					"description": null,
+					"data": null,
+					"dataOptions": null,
+					"dataMode": null,
+					"headerData": null,
+					"method": "GET",
+					"pathVariableData": [],
+					"queryParams": [],
+					"auth": {
+						"type": "noauth",
+						"noauth": []
+					},
+					"events": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "8b8f7fbd-f2e6-4286-b096-ca7d9f411289",
+								"exec": [
+									"pm.test(\"Status code is 400\", () => {",
+									"    pm.response.to.have.status(400);",
+									"    let response = pm.response.json();",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"folder": null,
+					"responses_order": [],
+					"preRequestScript": null,
+					"tests": "pm.test(\"Status code is 400\", () => {\n    pm.response.to.have.status(400);\n    let response = pm.response.json();\n});",
+					"currentHelper": null,
+					"helperAttributes": null,
+					"collectionId": "5b7294de-5d5b-4ab8-b39e-c0faac4289c5",
+					"pathVariables": {}
+				},
+				{
+					"id": "5f4d8963-10d6-4b3c-b46a-5bff986547d0",
+					"uid": "0-5f4d8963-10d6-4b3c-b46a-5bff986547d0",
+					"name": "Login Copy",
+					"url": "http://localhost:8080/api/v1/user/login",
+					"description": null,
+					"data": [],
+					"dataOptions": {
+						"raw": {
+							"language": "json"
+						}
+					},
+					"dataMode": "raw",
+					"headerData": null,
+					"method": "POST",
+					"pathVariableData": [],
+					"queryParams": [],
+					"auth": null,
+					"events": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "db2c7fdd-0d59-4a74-9e4b-5c8757753c3f",
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {",
+									"    pm.response.to.have.status(200);",
+									"    let response = pm.response.json();",
+									"    pm.collectionVariables.set(\"access_token_1\", response.data.access_token);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"folder": "4fe96884-f2d9-469b-96cd-460db53bb136",
+					"responses_order": [],
+					"preRequestScript": null,
+					"tests": "pm.test(\"Status code is 200\", () => {\n    pm.response.to.have.status(200);\n    let response = pm.response.json();\n    pm.collectionVariables.set(\"access_token_1\", response.data.access_token);\n});",
+					"currentHelper": null,
+					"helperAttributes": null,
+					"collectionId": "5b7294de-5d5b-4ab8-b39e-c0faac4289c5",
+					"rawModeData": "{\n    \"email\": \"{{email_check_account_verification}}\",\n    \"password\": \"123\"\n}",
+					"pathVariables": {}
+				},
+				{
+					"id": "883a86ce-e304-4594-a9f0-a4d62edcb299",
+					"uid": "0-883a86ce-e304-4594-a9f0-a4d62edcb299",
+					"name": "Register user",
+					"url": "http://localhost:8080/api/v1/user/register",
+					"description": "",
+					"data": [],
+					"dataOptions": {
+						"raw": {
+							"language": "json"
+						}
+					},
+					"dataMode": "raw",
+					"headerData": null,
+					"method": "POST",
+					"pathVariableData": [],
+					"queryParams": [],
+					"auth": null,
+					"events": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "c805f7d4-4edd-43f8-8abb-f230ed107895",
+								"exec": [
+									"pm.test(\"Status code is 201\", () => {",
+									"    pm.response.to.have.status(201);",
+									"    let response = pm.response.json();",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"folder": null,
+					"responses_order": [],
+					"preRequestScript": null,
+					"tests": "pm.test(\"Status code is 201\", () => {\n    pm.response.to.have.status(201);\n    let response = pm.response.json();\n});",
+					"currentHelper": null,
+					"helperAttributes": null,
+					"collectionId": "5b7294de-5d5b-4ab8-b39e-c0faac4289c5",
+					"rawModeData": "{\n    \"firstName\": \"test_{{$timestamp}}\",\n    \"lastName\": \"test__{{$timestamp}}\",\n    \"email\": \"test__{{$timestamp}}@test.com\",\n    \"password\": \"123\"\n}",
+					"pathVariables": {}
+				},
+				{
+					"id": "9408661a-7d49-4828-a92e-b616429ad73c",
+					"uid": "0-9408661a-7d49-4828-a92e-b616429ad73c",
+					"name": "Get profile with invalid token",
+					"url": "http://localhost:8080/api/v1/user/profile",
+					"description": null,
+					"data": null,
+					"dataOptions": null,
+					"dataMode": null,
+					"headerData": [
+						{
+							"key": "Authorization",
+							"value": "",
+							"description": "",
+							"type": "default",
+							"enabled": false
+						}
+					],
+					"method": "GET",
+					"pathVariableData": [],
+					"queryParams": [],
+					"auth": {
+						"type": "bearer",
+						"bearer": [
+							{
+								"key": "token",
+								"value": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJJbnZvaWNlciBhcHAiLCJhdWQiOiIiLCJpYXQiOjE3MDQ1NjQ0MzQsInN1YiI6InRlc3RAdGVzdC5jb20iLCJhdXRob3JpdGllcyI6WyJSRUFEOlVTRVIiLCJSRUFEOkNVU1RPTUVSIl0sImV4cCI6MTczMDQ4NDQzNH0.B0lQH8iSTTPvjBQcN5-b5H5XbhEE1wrpbHIThL3aiXrJqGf0432YG7tnlPlZoWXLmSOqlLrx7FIhU-abwSCEBQ_111111111111"
+							}
+						]
+					},
+					"events": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "32cf3b1c-68c3-4560-9b7d-7777c72361f6",
+								"exec": [
+									"pm.test(\"Status code is 400\", () => {",
+									"    pm.response.to.have.status(400);",
+									"    let response = pm.response.json();",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"folder": null,
+					"responses_order": [],
+					"preRequestScript": null,
+					"tests": "pm.test(\"Status code is 400\", () => {\n    pm.response.to.have.status(400);\n    let response = pm.response.json();\n});",
+					"currentHelper": "bearerAuth",
+					"helperAttributes": {
+						"id": "bearer",
+						"token": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJJbnZvaWNlciBhcHAiLCJhdWQiOiIiLCJpYXQiOjE3MDQ1NjQ0MzQsInN1YiI6InRlc3RAdGVzdC5jb20iLCJhdXRob3JpdGllcyI6WyJSRUFEOlVTRVIiLCJSRUFEOkNVU1RPTUVSIl0sImV4cCI6MTczMDQ4NDQzNH0.B0lQH8iSTTPvjBQcN5-b5H5XbhEE1wrpbHIThL3aiXrJqGf0432YG7tnlPlZoWXLmSOqlLrx7FIhU-abwSCEBQ_111111111111"
+					},
+					"collectionId": "5b7294de-5d5b-4ab8-b39e-c0faac4289c5",
+					"headers": "//Authorization: \n",
+					"pathVariables": {}
+				},
+				{
+					"id": "97967428-bd88-4fdb-bb4f-94dd0114ece8",
+					"uid": "0-97967428-bd88-4fdb-bb4f-94dd0114ece8",
+					"name": "Register user",
+					"url": "http://localhost:8080/api/v1/user/register",
+					"description": "",
+					"data": [],
+					"dataOptions": {
+						"raw": {
+							"language": "json"
+						}
+					},
+					"dataMode": "raw",
+					"headerData": null,
+					"method": "POST",
+					"pathVariableData": [],
+					"queryParams": [],
+					"auth": null,
+					"events": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "a6749e1f-6dbe-4b3d-ab69-b852c071ac6a",
+								"exec": [
+									"pm.test(\"Status code is 201\", () => {",
+									"    pm.response.to.have.status(201);",
+									"    let response = pm.response.json();",
+									"",
+									"    pm.collectionVariables.set(\"email_check_account_verification\", response.data.user.email);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"folder": "4fe96884-f2d9-469b-96cd-460db53bb136",
+					"responses_order": [],
+					"preRequestScript": null,
+					"tests": "pm.test(\"Status code is 201\", () => {\n    pm.response.to.have.status(201);\n    let response = pm.response.json();\n\n    pm.collectionVariables.set(\"email_check_account_verification\", response.data.user.email);\n});",
+					"currentHelper": null,
+					"helperAttributes": null,
+					"collectionId": "5b7294de-5d5b-4ab8-b39e-c0faac4289c5",
+					"rawModeData": "{\n    \"firstName\": \"test_{{$timestamp}}\",\n    \"lastName\": \"test__{{$timestamp}}\",\n    \"email\": \"test__{{$timestamp}}@test.com\",\n    \"password\": \"123\"\n}",
+					"pathVariables": {}
+				},
+				{
+					"id": "9a4fe578-9e23-45e0-b766-34c010a81ebb",
+					"uid": "0-9a4fe578-9e23-45e0-b766-34c010a81ebb",
+					"name": "Verify reset password request",
+					"url": "http://localhost:8080/api/v1/user/verify-password-reset/{{reset_password_key}}",
+					"description": null,
+					"data": null,
+					"dataOptions": null,
+					"dataMode": null,
+					"headerData": null,
+					"method": "GET",
+					"pathVariableData": [],
+					"queryParams": [],
+					"auth": null,
+					"events": null,
+					"folder": null,
+					"responses_order": [],
+					"currentHelper": null,
+					"helperAttributes": null,
+					"collectionId": "5b7294de-5d5b-4ab8-b39e-c0faac4289c5",
+					"pathVariables": {}
+				},
+				{
+					"id": "9c375c20-2a12-4501-8b6a-22909e15e44b",
+					"uid": "0-9c375c20-2a12-4501-8b6a-22909e15e44b",
+					"name": "Activate user account",
+					"url": "http://localhost:8080/api/v1/user/activate/account/{{email_check_account_verification}}",
+					"description": null,
+					"data": null,
+					"dataOptions": null,
+					"dataMode": null,
+					"headerData": null,
+					"method": "POST",
+					"pathVariableData": [],
+					"queryParams": [],
+					"auth": null,
+					"events": null,
+					"folder": "4fe96884-f2d9-469b-96cd-460db53bb136",
+					"responses_order": [],
+					"currentHelper": null,
+					"helperAttributes": null,
+					"collectionId": "5b7294de-5d5b-4ab8-b39e-c0faac4289c5",
+					"pathVariables": {}
+				},
+				{
+					"id": "efabd33a-3102-4906-8a27-36c40f3b2e43",
+					"uid": "0-efabd33a-3102-4906-8a27-36c40f3b2e43",
+					"name": "Get profile",
+					"url": "http://localhost:8080/api/v1/user/profile",
+					"description": null,
+					"data": null,
+					"dataOptions": null,
+					"dataMode": null,
+					"headerData": [
+						{
+							"key": "Authorization",
+							"value": "",
+							"description": "",
+							"type": "default",
+							"enabled": false
+						}
+					],
+					"method": "GET",
+					"pathVariableData": [],
+					"queryParams": [],
+					"auth": {
+						"type": "bearer",
+						"bearer": [
+							{
+								"key": "token",
+								"value": "{{access_token_1}}"
+							}
+						]
+					},
+					"events": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "b8809ec3-fc12-4aca-9d21-5abdc3f27f71",
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {",
+									"    pm.response.to.have.status(200);",
+									"    let response = pm.response.json();",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"folder": null,
+					"responses_order": [],
+					"preRequestScript": null,
+					"tests": "pm.test(\"Status code is 200\", () => {\n    pm.response.to.have.status(200);\n    let response = pm.response.json();\n});",
+					"currentHelper": "bearerAuth",
+					"helperAttributes": {
+						"id": "bearer",
+						"token": "{{access_token_1}}"
+					},
+					"collectionId": "5b7294de-5d5b-4ab8-b39e-c0faac4289c5",
+					"headers": "//Authorization: \n",
+					"pathVariables": {}
+				},
+				{
+					"id": "efca2258-1265-408b-9904-e835dfddb014",
+					"uid": "0-efca2258-1265-408b-9904-e835dfddb014",
+					"name": "Get profile Copy",
+					"url": "http://localhost:8080/api/v1/user/profile",
+					"description": null,
+					"data": null,
+					"dataOptions": null,
+					"dataMode": null,
+					"headerData": [
+						{
+							"key": "Authorization",
+							"value": "",
+							"description": "",
+							"type": "default",
+							"enabled": false
+						}
+					],
+					"method": "GET",
+					"pathVariableData": [],
+					"queryParams": [],
+					"auth": {
+						"type": "bearer",
+						"bearer": [
+							{
+								"key": "token",
+								"value": "{{access_token_2}}"
+							}
+						]
+					},
+					"events": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "d656de7b-742c-4528-bf93-7e38aca1263c",
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {",
+									"    pm.response.to.have.status(200);",
+									"    let response = pm.response.json();",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"folder": null,
+					"responses_order": [],
+					"preRequestScript": null,
+					"tests": "pm.test(\"Status code is 200\", () => {\n    pm.response.to.have.status(200);\n    let response = pm.response.json();\n});",
+					"currentHelper": "bearerAuth",
+					"helperAttributes": {
+						"id": "bearer",
+						"token": "{{access_token_2}}"
+					},
+					"collectionId": "5b7294de-5d5b-4ab8-b39e-c0faac4289c5",
+					"headers": "//Authorization: \n",
+					"pathVariables": {}
+				},
+				{
+					"id": "f1644829-dce6-4dea-8a60-310fe4db7649",
+					"uid": "0-f1644829-dce6-4dea-8a60-310fe4db7649",
+					"name": "Verify code",
+					"url": "http://localhost:8080/api/v1/user/verify/test2@test.com/saVeohCN",
+					"description": null,
+					"data": null,
+					"dataOptions": null,
+					"dataMode": null,
+					"headerData": null,
+					"method": "GET",
+					"pathVariableData": [],
+					"queryParams": [],
+					"auth": null,
+					"events": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "ae7c72fe-4e87-4e69-a8aa-5b0564818f1b",
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {",
+									"    pm.response.to.have.status(200);",
+									"    let response = pm.response.json();",
+									"    pm.collectionVariables.set(\"access_token_2\", response.data.access_token);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"folder": null,
+					"responses_order": [],
+					"preRequestScript": null,
+					"tests": "pm.test(\"Status code is 200\", () => {\n    pm.response.to.have.status(200);\n    let response = pm.response.json();\n    pm.collectionVariables.set(\"access_token_2\", response.data.access_token);\n});",
+					"currentHelper": null,
+					"helperAttributes": null,
+					"collectionId": "5b7294de-5d5b-4ab8-b39e-c0faac4289c5",
+					"pathVariables": {}
+				},
+				{
+					"id": "f794ac31-db54-4741-bdab-3c6e0f79f04f",
+					"uid": "0-f794ac31-db54-4741-bdab-3c6e0f79f04f",
+					"name": "Reset password",
+					"url": "http://localhost:8080/api/v1/user/change-password/{{reset_password_key}}",
+					"description": null,
+					"data": [],
+					"dataOptions": {
+						"raw": {
+							"language": "json"
+						}
+					},
+					"dataMode": "raw",
+					"headerData": null,
+					"method": "POST",
+					"pathVariableData": [],
+					"queryParams": [],
+					"auth": null,
+					"events": null,
+					"folder": null,
+					"responses_order": [],
+					"currentHelper": null,
+					"helperAttributes": null,
+					"collectionId": "5b7294de-5d5b-4ab8-b39e-c0faac4289c5",
+					"rawModeData": "{\n        \"password\": \"111\",\n        \"confirmation\": \"111\"\n}",
+					"pathVariables": {}
+				}
+			]
+		}
+	],
+	"environments": [
+		{
+			"id": "90b4cb62-f250-4eff-8fec-ae31e93bd116",
+			"name": "My Workspace - globals",
+			"values": []
+		}
+	],
+	"headerPresets": [],
+	"globals": []
+}

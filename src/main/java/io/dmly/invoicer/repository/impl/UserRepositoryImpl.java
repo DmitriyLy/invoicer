@@ -198,6 +198,11 @@ public class UserRepositoryImpl implements UserRepository<User> {
         jdbcTemplate.update(DELETE_RESET_PASSWORD_REQUEST_ENTITY_BY_KEY_QUERY, Map.of("key", key));
     }
 
+    @Override
+    public void setUserAccountEnabled(Long id) {
+        jdbcTemplate.update(SET_USER_ENABLED_QUERY, Map.of("id", id));
+    }
+
     private Integer getEmailCount(String email) {
         return jdbcTemplate.queryForObject(GET_EMAILS_COUNT_QUERY, Map.of("email", email), Integer.class);
     }

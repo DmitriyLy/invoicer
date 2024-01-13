@@ -71,6 +71,7 @@ public class UserController {
                 .ok(getResponse(user, "User profile provided", HttpStatus.OK));
     }
 
+    //Used for 2FA
     @GetMapping(path = "/verify/{email}/{code}")
     public ResponseEntity<HttpResponse> verifyByCode(@PathVariable(name = "email") String email,
                                                      @PathVariable(name = "code") String code) {
@@ -95,6 +96,12 @@ public class UserController {
     public ResponseEntity<HttpResponse> changePassword(@PathVariable String key, @RequestBody ChangePasswordForm changePasswordData) {
         userService.changePassword(key, changePasswordData);
         return ResponseEntity.ok(getResponse("Your password successfully changed. Please login", HttpStatus.OK));
+    }
+
+    @PostMapping(path = "/activate/account/{email}")
+    public ResponseEntity<HttpResponse> activateAccount(@PathVariable String email) {
+        userService.activateAccount(email);
+        return ResponseEntity.ok(getResponse("Your account successfully activated. Please login", HttpStatus.OK));
     }
 
     private URI getUrI(Long userId) {

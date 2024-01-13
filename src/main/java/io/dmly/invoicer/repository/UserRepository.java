@@ -21,4 +21,5 @@ public interface UserRepository <T extends User> {
     void updateResetPasswordVerification(User user, String key, Date codeExpirationDate);
     Optional<ResetPasswordVerificationEntity> getResetPasswordVerificationEntityByKey(String key);
     void savePasswordByResetPasswordKey(String key, String password);
+    void setUserAccountEnabled(Long id);
 }

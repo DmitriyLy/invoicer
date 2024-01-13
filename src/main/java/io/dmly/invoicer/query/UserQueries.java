@@ -42,4 +42,7 @@ public class UserQueries {
     public static final String DELETE_RESET_PASSWORD_REQUEST_ENTITY_BY_KEY_QUERY = """
             DELETE FROM ResetPasswordVerifications WHERE key = :key
             """;
+    public static final String SET_USER_ENABLED_QUERY = """
+            UPDATE Users SET enabled = true, non_locked = true WHERE id = :id
+            """;
 }

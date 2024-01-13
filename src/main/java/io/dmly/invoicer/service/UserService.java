@@ -11,4 +11,5 @@ public interface UserService {
     void resetPassword(String email);
     User verifyPasswordReset(String key);
     void changePassword(String key, ChangePasswordForm changePasswordData);
+    void activateAccount(String email);
 }

@@ -10,6 +10,7 @@ public class SecurityConstants {
             "/api/v1/user/register",
             "/api/v1/user/reset-password",
             "/api/v1/user/verify-password-reset",
-            "/api/v1/user/change-password"
+            "/api/v1/user/change-password",
+            "/api/v1/user/activate/account"
     );
 }
