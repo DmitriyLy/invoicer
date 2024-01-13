@@ -1,4 +1,4 @@
-package io.dmly.invoicer.security.costant;
+package io.dmly.invoicer.security.constant;
 
 import java.util.List;
 
@@ -11,6 +11,10 @@ public class SecurityConstants {
             "/api/v1/user/reset-password",
             "/api/v1/user/verify-password-reset",
             "/api/v1/user/change-password",
-            "/api/v1/user/activate/account"
+            "/api/v1/user/activate/account",
+            "/api/v1/user/refresh/token"
     );
+
+    public static final String ACCESS_TOKEN = "access_token";
+    public static final String REFRESH_TOKEN = "refresh_token";
 }

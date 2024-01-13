@@ -2,7 +2,6 @@ package io.dmly.invoicer.security.configuration;
 
 import io.dmly.invoicer.security.filter.CustomAuthorizationFilter;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -24,9 +23,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import java.util.Arrays;
-
-import static io.dmly.invoicer.security.costant.SecurityConstants.PUBLIC_URLS;
+import static io.dmly.invoicer.security.constant.SecurityConstants.PUBLIC_URLS;
 
 @Configuration
 @EnableWebSecurity

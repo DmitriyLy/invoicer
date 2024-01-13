@@ -9,6 +9,8 @@ import io.dmly.invoicer.model.form.LoginForm;
 import io.dmly.invoicer.response.HttpResponse;
 import io.dmly.invoicer.service.UserService;
 import io.dmly.invoicer.utils.HttpResponseProvider;
+import io.dmly.invoicer.utils.TokenExtractor;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.MapUtils;
@@ -28,6 +30,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import static io.dmly.invoicer.security.constant.SecurityConstants.ACCESS_TOKEN;
+import static io.dmly.invoicer.security.constant.SecurityConstants.REFRESH_TOKEN;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "/api/v1/user")
@@ -37,6 +42,7 @@ public class UserController {
     private final UserDtoMapper userDtoMapper;
     private final TokenProvider tokenProvider;
     private final HttpResponseProvider httpResponseProvider;
+    private final TokenExtractor tokenExtractor;
 
     @PostMapping(path = "/login")
     public ResponseEntity<HttpResponse> login(@RequestBody @Valid LoginForm loginForm) {
@@ -104,6 +110,37 @@ public class UserController {
         return ResponseEntity.ok(getResponse("Your account successfully activated. Please login", HttpStatus.OK));
     }
 
+    @PostMapping(path = "/refresh/token")
+    public ResponseEntity<HttpResponse> refreshToken(HttpServletRequest request) {
+        Optional<String> refreshToken = tokenExtractor.extractToken(request);
+
+        if (refreshToken.isEmpty()) {
+            return new ResponseEntity<>(getResponse("Cannot get refresh token from request", HttpStatus.BAD_REQUEST),
+                    HttpStatus.BAD_REQUEST);
+        }
+
+        String email = tokenProvider.getSubject(refreshToken.get(), request);
+
+        if (!tokenProvider.isTokenValid(email, refreshToken.get())) {
+            return new ResponseEntity<>(getResponse("Refresh token is invalid", HttpStatus.BAD_REQUEST),
+                    HttpStatus.BAD_REQUEST);
+        }
+
+        User user = userService.getUserByEmail(email);
+
+        tokenProvider.getAccessToken(user);
+
+        return new ResponseEntity<>(
+                getResponse(
+                        user,
+                        getTokensMap(tokenProvider.getAccessToken(user), refreshToken.get()),
+                        "Access token updated.",
+                        HttpStatus.OK
+                ),
+                HttpStatus.OK
+        );
+    }
+
     private URI getUrI(Long userId) {
         try {
             return new URI(ServletUriComponentsBuilder
@@ -116,9 +153,13 @@ public class UserController {
     }
 
     private Map<String, Object> getTokensMap(User user) {
+        return getTokensMap(tokenProvider.getAccessToken(user), tokenProvider.getRefreshToken(user));
+    }
+
+    private Map<String, Object> getTokensMap(String accessToken, String refreshToke) {
         return Map.of(
-                "access_token", tokenProvider.getAccessToken(user),
-                "refresh_token", tokenProvider.getRefreshToken(user)
+                ACCESS_TOKEN, accessToken,
+                REFRESH_TOKEN, refreshToke
         );
     }
 

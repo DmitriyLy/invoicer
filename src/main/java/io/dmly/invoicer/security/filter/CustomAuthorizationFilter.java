@@ -1,8 +1,9 @@
 package io.dmly.invoicer.security.filter;
 
 import io.dmly.invoicer.exception.ApiException;
-import io.dmly.invoicer.jwt.provider.TokenProvider;
 import io.dmly.invoicer.exception.handler.AuthorizationExceptionHandler;
+import io.dmly.invoicer.jwt.provider.TokenProvider;
+import io.dmly.invoicer.utils.TokenExtractor;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -10,7 +11,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -20,10 +20,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 
-import static io.dmly.invoicer.security.costant.SecurityConstants.AUTH_TOKEN_PREFIX;
-import static io.dmly.invoicer.security.costant.SecurityConstants.PUBLIC_URLS;
+import static io.dmly.invoicer.security.constant.SecurityConstants.PUBLIC_URLS;
 
 @Component
 @RequiredArgsConstructor
@@ -31,6 +29,7 @@ import static io.dmly.invoicer.security.costant.SecurityConstants.PUBLIC_URLS;
 public class CustomAuthorizationFilter extends OncePerRequestFilter {
     private final TokenProvider tokenProvider;
     private final AuthorizationExceptionHandler authorizationExceptionHandler;
+    private final TokenExtractor tokenExtractor;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -57,8 +56,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
         if (isPublicUrl(request.getRequestURI()) || HttpMethod.OPTIONS.name().equals(request.getMethod())) {
             return true;
         }
-        String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-        return authHeader == null || !authHeader.startsWith(AUTH_TOKEN_PREFIX);
+        return tokenExtractor.extractToken(request).isEmpty();
     }
 
     private boolean isPublicUrl(String requestUri) {
@@ -71,9 +69,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
     }
 
     private String getToken(HttpServletRequest request) {
-        return Optional.ofNullable(request.getHeader(HttpHeaders.AUTHORIZATION))
-                .filter(headerValue -> StringUtils.isNotEmpty(headerValue) && headerValue.startsWith(AUTH_TOKEN_PREFIX))
-                .map(headerValue -> headerValue.replaceFirst(AUTH_TOKEN_PREFIX, ""))
+        return tokenExtractor.extractToken(request)
                 .orElse(StringUtils.EMPTY);
     }
 
