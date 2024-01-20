@@ -14,12 +14,11 @@ export interface CustomHttpResponse<T> {
     timestamp: Date;
     statusCode: number;
     status: string;
-    message?: string;
+    message: string;
     reason?: string;
     developerMessage?: string;
-    data?: T
+    data?: T;
 }
-
 
 export interface Profile {
     user?: User;
