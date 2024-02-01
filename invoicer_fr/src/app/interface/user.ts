@@ -10,7 +10,7 @@ export interface User {
     imageUrl?: string;
     enabled: boolean;
     isNotLocked: boolean;
-    usingMfa: boolean;
+    isUsingMfa: boolean;
     createdAt?: Date;
     roleName: string;
     permissions: string;

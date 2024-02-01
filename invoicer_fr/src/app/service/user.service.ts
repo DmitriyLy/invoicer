@@ -13,7 +13,7 @@ export class UserService {
 
   login$ = (email: string, password: string) => <Observable<CustomHttpResponse<Profile>>>
     this.http.post<CustomHttpResponse<Profile>>
-      (`${this.server}/user/login`, { email, password })
+      (`${this.server}/api/v1/user/login`, { email, password })
       .pipe(
         tap(console.log),
         catchError(this.handleError)
@@ -21,7 +21,7 @@ export class UserService {
 
   verifyCode$ = (email: string, code: string) => <Observable<CustomHttpResponse<Profile>>>
     this.http.get<CustomHttpResponse<Profile>>
-      (`${this.server}/user/verify/code/${email}/${code}`)
+      (`${this.server}/api/v1/user/verify/${email}/${code}`)
       .pipe(
         tap(console.log),
         catchError(this.handleError)
