@@ -1,6 +1,7 @@
 package io.dmly.invoicer.rowmapper;
 
 import io.dmly.invoicer.model.User;
+import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
@@ -8,9 +9,18 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 @Component
+@RequiredArgsConstructor
 public class UserRowMapper implements RowMapper<User> {
+    private final RoleRowMapper roleRowMapper;
+
     @Override
     public User mapRow(ResultSet resultSet, int rowNum) throws SQLException {
+        var role = roleRowMapper.buildRole(
+                resultSet.getLong("role_id"),
+                resultSet.getString("role_name"),
+                resultSet.getString("permission")
+        );
+
         return User.builder()
                 .id(resultSet.getLong("id"))
                 .firstName(resultSet.getString("first_name"))
@@ -26,6 +36,7 @@ public class UserRowMapper implements RowMapper<User> {
                 .isUsingMfa(resultSet.getBoolean("using_mfa"))
                 .imageUrl(resultSet.getString("image_url"))
                 .createdAt(resultSet.getTimestamp("created_at").toLocalDateTime())
+                .role(role)
                 .build();
     }
 }

@@ -8,7 +8,13 @@ public class UserQueries {
             "VALUES(:userId, :url)";
     public static final String INSERT_SET_ROLE_FOR_USER_QUERY = "INSERT INTO UserRoles(user_id, role_id) " +
             "VALUES(:userId, :roleId)";
-    public static final String SELECT_USER_BY_EMAIL_QUERY = "SELECT * FROM Users WHERE email = :email";
+    public static final String SELECT_USER_BY_EMAIL_QUERY = """
+            SELECT Users.*, Roles.name role_name, Roles.permission, Roles.id role_id
+            FROM Users
+            LEFT JOIN UserRoles ON Users.id = UserRoles.user_id
+            LEFT JOIN Roles ON UserRoles.role_id = Roles.id
+            WHERE Users.email = :email
+            """;
     public static final String UPSERT_VERIFICATION_CODE_FOR_USER_QUERY = """
             INSERT INTO TwoFactorVerifications (user_id, code, expiration_date) 
             VALUES(:userId, :code, TO_TIMESTAMP(:expirationDate, 'YYYY-MM-DD HH24:MI:SS')) 

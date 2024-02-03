@@ -14,5 +14,7 @@ public record UserDto(Long id,
                       boolean isNonLocked,
                       boolean isUsingMfa,
                       String imageUrl,
-                      LocalDateTime createdAt) {
+                      LocalDateTime createdAt,
+                      String roleName,
+                      String permissions) {
 }

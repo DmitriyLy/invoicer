@@ -10,5 +10,7 @@ public interface UserDtoMapper {
     @Mapping(target = "isEnabled", expression = "java(user.isEnabled())")
     @Mapping(target = "isNonLocked", expression = "java(user.isNonLocked())")
     @Mapping(target = "isUsingMfa", expression = "java(user.isUsingMfa())")
+    @Mapping(target = "roleName", source = "role.name")
+    @Mapping(target = "permissions", source = "role.permission")
     UserDto fromUser(User user);
 }
