@@ -6,6 +6,7 @@ import io.dmly.invoicer.model.InvoicerUserDetails;
 import io.dmly.invoicer.model.User;
 import io.dmly.invoicer.model.form.ChangePasswordForm;
 import io.dmly.invoicer.model.form.LoginForm;
+import io.dmly.invoicer.model.form.UpdateUserDetailsForm;
 import io.dmly.invoicer.response.HttpResponse;
 import io.dmly.invoicer.service.UserService;
 import io.dmly.invoicer.utils.HttpResponseProvider;
@@ -75,6 +76,13 @@ public class UserController {
         User user = getUserFromAuthentication(authentication);
         return ResponseEntity
                 .ok(getResponse(user, "User profile provided", HttpStatus.OK));
+    }
+
+    @PatchMapping("/update")
+    public ResponseEntity<HttpResponse> update(@RequestBody @Valid UpdateUserDetailsForm userDetailsForm) {
+        User user = userService.updateUserRetails(userDetailsForm);
+        return ResponseEntity
+                .ok(getResponse(user, "User profile updated", HttpStatus.OK));
     }
 
     //Used for 2FA

@@ -5,6 +5,7 @@ import io.dmly.invoicer.model.ResetPasswordVerificationEntity;
 import io.dmly.invoicer.model.Role;
 import io.dmly.invoicer.model.User;
 import io.dmly.invoicer.model.enumaration.VerificationUrlType;
+import io.dmly.invoicer.model.form.UpdateUserDetailsForm;
 import io.dmly.invoicer.repository.RoleRepository;
 import io.dmly.invoicer.repository.UserRepository;
 import io.dmly.invoicer.rowmapper.ResetPasswordVerificationEntityRowMapper;
@@ -93,13 +94,13 @@ public class UserRepositoryImpl implements UserRepository<User> {
     }
 
     @Override
-    public User get(Long id) {
+    public Optional<User> get(Long id) {
         try {
-            return jdbcTemplate.queryForObject(SELECT_USER_BY_ID_QUERY,
+            return Optional.of(jdbcTemplate.queryForObject(SELECT_USER_BY_ID_QUERY,
                     Map.of("id", id),
                     userRowMapper
 
-            );
+            ));
         } catch (EmptyResultDataAccessException exception) {
             log.error("Cannot find user by id {}", id);
             throw new ApiException("Cannot find user by specified id");
@@ -203,6 +204,15 @@ public class UserRepositoryImpl implements UserRepository<User> {
         jdbcTemplate.update(SET_USER_ENABLED_QUERY, Map.of("id", id));
     }
 
+    @Override
+    public void updateDetails(UpdateUserDetailsForm updateDetails) {
+        int updated = jdbcTemplate.update(UPDATE_USER_DETAILS_QUERY, getUpdateUserDetailsParameters(updateDetails));
+
+        if (updated == 0) {
+            throw new ApiException("Nothing was updated. Please check user id");
+        }
+    }
+
     private Integer getEmailCount(String email) {
         return jdbcTemplate.queryForObject(GET_EMAILS_COUNT_QUERY, Map.of("email", email), Integer.class);
     }
@@ -213,6 +223,20 @@ public class UserRepositoryImpl implements UserRepository<User> {
                 .addValue("lastName", user.getLastName())
                 .addValue("email", user.getEmail())
                 .addValue("password", passwordEncoder.encode(user.getPassword()))
+                ;
+    }
+
+    private SqlParameterSource getUpdateUserDetailsParameters(UpdateUserDetailsForm updateDetails) {
+        return new MapSqlParameterSource()
+                .addValue("id", updateDetails.getId())
+                .addValue("firstName", updateDetails.getFirstName())
+                .addValue("lastName", updateDetails.getLastName())
+                .addValue("email", updateDetails.getEmail())
+                .addValue("phone", updateDetails.getPhone())
+                .addValue("address", updateDetails.getAddress())
+                .addValue("title", updateDetails.getTitle())
+                .addValue("bio", updateDetails.getBio())
+                .addValue("imageUrl", updateDetails.getImageUrl())
                 ;
     }
 }

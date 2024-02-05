@@ -40,7 +40,13 @@ public class UserQueries {
             SELECT * FROM ResetPasswordVerifications
             WHERE key = :key
             """;
-    public static final String SELECT_USER_BY_ID_QUERY = "SELECT * FROM Users WHERE id = :id";
+    public static final String SELECT_USER_BY_ID_QUERY = """
+            SELECT Users.*, Roles.name role_name, Roles.permission, Roles.id role_id
+            FROM Users
+            LEFT JOIN UserRoles ON Users.id = UserRoles.user_id
+            LEFT JOIN Roles ON UserRoles.role_id = Roles.id 
+            WHERE Users.id = :id
+            """;
     public static final String UPDATE_USER_PASSWORD_BY_RESET_PASSWORD_KEY_QUERY = """
             UPDATE Users SET password = :password 
             WHERE id = (SELECT user_id FROM ResetPasswordVerifications WHERE key = :key)
@@ -50,5 +56,14 @@ public class UserQueries {
             """;
     public static final String SET_USER_ENABLED_QUERY = """
             UPDATE Users SET enabled = true, non_locked = true WHERE id = :id
+            """;
+    public static final String UPDATE_USER_DETAILS_QUERY = """
+            UPDATE Users 
+            SET 
+                first_name = :firstName, last_name = :lastName, email = :email,
+                phone = :phone, address = :address, title = :title,
+                bio = :bio, image_url = :imageUrl
+            WHERE
+                id = :id
             """;
 }

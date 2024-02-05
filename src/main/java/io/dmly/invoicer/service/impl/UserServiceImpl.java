@@ -5,6 +5,7 @@ import io.dmly.invoicer.model.ResetPasswordVerificationEntity;
 import io.dmly.invoicer.model.User;
 import io.dmly.invoicer.model.enumaration.VerificationUrlType;
 import io.dmly.invoicer.model.form.ChangePasswordForm;
+import io.dmly.invoicer.model.form.UpdateUserDetailsForm;
 import io.dmly.invoicer.repository.UserRepository;
 import io.dmly.invoicer.service.EmailService;
 import io.dmly.invoicer.service.UserService;
@@ -84,7 +85,9 @@ public class UserServiceImpl implements UserService {
             throw new ApiException("Password reset request has expired. Please repeat operation.");
         }
 
-        return userRepository.get(resetPasswordVerificationEntity.userId());
+        return userRepository
+                .get(resetPasswordVerificationEntity.userId())
+                .orElseThrow(this::getUserNotFoundException);
     }
 
     @Override
@@ -122,8 +125,20 @@ public class UserServiceImpl implements UserService {
         userRepository.setUserAccountEnabled(user.getId());
     }
 
+    @Override
+    public User updateUserRetails(UpdateUserDetailsForm updateDetails) {
+        userRepository.updateDetails(updateDetails);
+        return userRepository
+                .get(updateDetails.getId())
+                .orElseThrow(this::getUserNotFoundException);
+    }
+
     protected void sendCodeViaSms(User userDto, String verificationCode, Date codeExpirationDate) {
         String message = String.format("Invoicer verification code: %s, active till %s", verificationCode, codeExpirationDate);
         log.info("-----> Sending verification code in SMS >>>>>>>> " + message);
+    }
+
+    private ApiException getUserNotFoundException() {
+        return new ApiException("Cannot find a user by id");
     }
 }
