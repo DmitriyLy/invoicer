@@ -7,6 +7,7 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.JWTVerifier;
 import io.dmly.invoicer.exception.ApiException;
+import io.dmly.invoicer.exception.TokenIsExpiredException;
 import io.dmly.invoicer.jwt.provider.TokenProvider;
 import io.dmly.invoicer.model.InvoicerUserDetails;
 import io.dmly.invoicer.model.Role;
@@ -44,10 +45,10 @@ public class TokenProviderImpl implements TokenProvider {
     @Value("${jwt.secret:YUnhnded898b8HUY76g78}")
     private String secret;
 
-    @Value("${jwt.access.token.expiration.period:25920000}")
+    @Value("${jwt.access.token.expiration.period:25920}")
     private Long accessTokenExpirationPeriod;
 
-    @Value("${jwt.refresh.token.expiration.period:51840000}")
+    @Value("${jwt.refresh.token.expiration.period:51840}")
     private Long refreshTokenExpirationPeriod;
 
     @Value("${jwt.issuer:Invoicer app}")
@@ -75,7 +76,7 @@ public class TokenProviderImpl implements TokenProvider {
                 .withAudience(audience)
                 .withIssuedAt(new Date())
                 .withSubject(user.getEmail())
-                .withExpiresAt(DateUtils.addSeconds(new Date(), accessTokenExpirationPeriod.intValue()))
+                .withExpiresAt(DateUtils.addSeconds(new Date(), refreshTokenExpirationPeriod.intValue()))
                 .sign(getAlgorithm());
     }
 
@@ -103,14 +104,14 @@ public class TokenProviderImpl implements TokenProvider {
             return getJwtVerifier().verify(token).getSubject();
         } catch (TokenExpiredException e) {
             request.setAttribute("expiredMessage", e.getMessage());
+            throw new TokenIsExpiredException(e.getMessage());
         } catch (InvalidClaimException e) {
             request.setAttribute("invalidClaim", e.getMessage());
+            throw new ApiException(e.getMessage());
         } catch (Exception e) {
             log.error("Cannot get subject", e);
             throw new ApiException("Cannot get subject", e);
         }
-
-        return null;
     }
 
     private boolean isTokenExpired(String token) {

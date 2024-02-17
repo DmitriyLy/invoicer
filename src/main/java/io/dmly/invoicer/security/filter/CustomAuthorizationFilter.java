@@ -37,8 +37,6 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
             String token = getToken(request);
             String email = tokenProvider.getSubject(token, request);
 
-            checkTokenValid(email, token);
-
             List<GrantedAuthority> authorities = tokenProvider.getAuthoritiesFromToken(token);
             Authentication authentication = tokenProvider.getAuthentication(email, authorities, request);
 
@@ -71,11 +69,5 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
     private String getToken(HttpServletRequest request) {
         return tokenExtractor.extractToken(request)
                 .orElse(StringUtils.EMPTY);
-    }
-
-    private void checkTokenValid(String email, String token) {
-        if (!tokenProvider.isTokenValid(email, token)) {
-            throw new ApiException("Provided token is invalid");
-        }
     }
 }

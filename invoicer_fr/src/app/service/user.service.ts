@@ -3,13 +3,14 @@ import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
 import {catchError, Observable, tap, throwError} from 'rxjs';
 import {CustomHttpResponse, Profile} from '../interface/appstates';
 import {User} from "../interface/user";
+import {Key} from "../enum/key.enum";
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
   private readonly server: string = 'http://localhost:8080';
-  private readonly token: string = 'Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJJbnZvaWNlciBhcHAiLCJhdWQiOiIiLCJpYXQiOjE3MDcyNDQ4NzQsInN1YiI6InRlc3RAdGVzdC5jb20iLCJhdXRob3JpdGllcyI6WyJSRUFEOlVTRVIiLCJSRUFEOkNVU1RPTUVSIiwiVVBEQVRFOlVTRVIiLCJVUERBVEU6Q1VTVE9NRVIiLCJDUkVBVEU6VVNFUiIsIkNSRUFURTpDVVNUT01FUiIsIkRFTEVURTpVU0VSIiwiREVMRVRFOkNVU1RPTUVSIl0sImV4cCI6MTczMzE2NDg3NH0.7uaF2IphFRLnULHbeR5_ezoBvW6z2mlaK8H-1FgewS2lxaFDnczrUMkaZLSXNFbIw-o6adH-rTkCXL2Ek95qGQ';
+  private readonly token: string = '';
 
   constructor(private http: HttpClient) {
   }
@@ -43,6 +44,20 @@ export class UserService {
     (`${this.server}/api/v1/user/update`, user,{headers: {'Authorization': this.token}})
       .pipe(
         tap(console.log),
+        catchError(this.handleError)
+      );
+
+  refreshToken$ = () => <Observable<CustomHttpResponse<Profile>>>
+    this.http.post<CustomHttpResponse<Profile>>
+    (`${this.server}/api/v1/user/refresh/token`, null, {headers: { 'Authorization': `Bearer ${localStorage.getItem(Key.REFRESH_TOKEN)}` }})
+      .pipe(
+        tap(response => {
+          console.log(response);
+          localStorage.removeItem(Key.TOKEN);
+          localStorage.removeItem(Key.REFRESH_TOKEN);
+          localStorage.setItem(Key.TOKEN, response.data.access_token);
+          localStorage.setItem(Key.REFRESH_TOKEN, response.data.refresh_token);
+        }),
         catchError(this.handleError)
       );
 

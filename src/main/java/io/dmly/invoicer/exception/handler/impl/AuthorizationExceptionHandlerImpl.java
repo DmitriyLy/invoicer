@@ -1,5 +1,6 @@
 package io.dmly.invoicer.exception.handler.impl;
 
+import io.dmly.invoicer.exception.TokenIsExpiredException;
 import io.dmly.invoicer.response.HttpResponse;
 import io.dmly.invoicer.exception.handler.AuthorizationExceptionHandler;
 import io.dmly.invoicer.utils.HttpResponseProvider;
@@ -25,7 +26,12 @@ public class AuthorizationExceptionHandlerImpl implements AuthorizationException
         HttpStatus httpStatus;
         HttpResponse httpResponse;
 
-        if (knownExceptions.contains(exception.getClass())) {
+        Class<? extends Exception> exceptionClass = exception.getClass();
+
+        if (exception instanceof TokenIsExpiredException) {
+            httpStatus = HttpStatus.UNAUTHORIZED;
+            httpResponse = httpResponseProvider.getHttpResponse(exception.getMessage(), httpStatus);
+        } else if (knownExceptions.contains(exceptionClass)) {
             httpStatus = HttpStatus.BAD_REQUEST;
             httpResponse = httpResponseProvider.getHttpResponse(exception.getMessage(), httpStatus);
         } else {

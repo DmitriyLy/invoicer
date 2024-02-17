@@ -1,6 +1,7 @@
 package io.dmly.invoicer.exception.handler;
 
 import io.dmly.invoicer.exception.ApiException;
+import io.dmly.invoicer.exception.TokenIsExpiredException;
 import io.dmly.invoicer.response.HttpResponse;
 import io.dmly.invoicer.utils.HttpResponseProvider;
 import lombok.RequiredArgsConstructor;
@@ -47,6 +48,14 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler i
         return new ResponseEntity<>(
                 httpResponseProvider.getHttpResponse(exception.getMessage(), HttpStatus.BAD_REQUEST),
                 HttpStatus.BAD_REQUEST
+        );
+    }
+
+    @ExceptionHandler(TokenIsExpiredException.class)
+    public ResponseEntity<HttpResponse> handleTokeIsExpiredException(TokenIsExpiredException exception) {
+        return new ResponseEntity<>(
+                httpResponseProvider.getHttpResponse(exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR),
+                HttpStatus.INTERNAL_SERVER_ERROR
         );
     }
 }
