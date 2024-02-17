@@ -3,6 +3,7 @@ package io.dmly.invoicer.repository;
 import io.dmly.invoicer.model.ResetPasswordVerificationEntity;
 import io.dmly.invoicer.model.User;
 import io.dmly.invoicer.model.form.UpdateUserDetailsForm;
+import jakarta.validation.constraints.NotEmpty;
 
 import java.util.Collection;
 import java.util.Date;
@@ -24,4 +25,5 @@ public interface UserRepository <T extends User> {
     void savePasswordByResetPasswordKey(String key, String password);
     void setUserAccountEnabled(Long id);
     void updateDetails(UpdateUserDetailsForm updateDetails);
+    void updatePassword(Long id, @NotEmpty(message = "New password is not specified") String newPassword);
 }

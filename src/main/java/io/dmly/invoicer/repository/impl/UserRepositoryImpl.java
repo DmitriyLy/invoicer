@@ -213,6 +213,14 @@ public class UserRepositoryImpl implements UserRepository<User> {
         }
     }
 
+    @Override
+    public void updatePassword(Long id, String newPassword) {
+        jdbcTemplate.update(UPDATE_PASSWORD_BY_USER_ID_QUERY, Map.of(
+                "id", id,
+                "password", passwordEncoder.encode(newPassword)
+        ));
+    }
+
     private Integer getEmailCount(String email) {
         return jdbcTemplate.queryForObject(GET_EMAILS_COUNT_QUERY, Map.of("email", email), Integer.class);
     }

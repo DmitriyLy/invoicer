@@ -2,6 +2,7 @@ package io.dmly.invoicer.service;
 
 import io.dmly.invoicer.model.User;
 import io.dmly.invoicer.model.form.ChangePasswordForm;
+import io.dmly.invoicer.model.form.UpdatePasswordForm;
 import io.dmly.invoicer.model.form.UpdateUserDetailsForm;
 
 public interface UserService {
@@ -14,4 +15,5 @@ public interface UserService {
     void changePassword(String key, ChangePasswordForm changePasswordData);
     void activateAccount(String email);
     User updateUserRetails(UpdateUserDetailsForm updateDetails);
+    void updatePassword(Long id, UpdatePasswordForm form);
 }

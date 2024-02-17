@@ -5,6 +5,7 @@ import io.dmly.invoicer.model.ResetPasswordVerificationEntity;
 import io.dmly.invoicer.model.User;
 import io.dmly.invoicer.model.enumaration.VerificationUrlType;
 import io.dmly.invoicer.model.form.ChangePasswordForm;
+import io.dmly.invoicer.model.form.UpdatePasswordForm;
 import io.dmly.invoicer.model.form.UpdateUserDetailsForm;
 import io.dmly.invoicer.repository.UserRepository;
 import io.dmly.invoicer.service.EmailService;
@@ -15,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -28,6 +30,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository<User> userRepository;
     private final VerificationUrlGenerator verificationUrlGenerator;
     private final EmailService emailService;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public User createUser(User user) {
@@ -131,6 +134,21 @@ public class UserServiceImpl implements UserService {
         return userRepository
                 .get(updateDetails.getId())
                 .orElseThrow(this::getUserNotFoundException);
+    }
+
+    @Override
+    public void updatePassword(Long id, UpdatePasswordForm form) {
+        if (!form.getNewPassword().equals(form.getConfirmPassword())) {
+            throw new ApiException("Password and confirmation don't match, Please try again.");
+        }
+
+        var user = userRepository.get(id).orElseThrow(() -> new ApiException("Cannot find user by specified id"));
+
+        if (!passwordEncoder.matches(form.getCurrentPassword(), user.getPassword())) {
+            throw new ApiException("Current password is incorrect. Please try again.");
+        }
+
+        userRepository.updatePassword(id, form.getNewPassword());
     }
 
     protected void sendCodeViaSms(User userDto, String verificationCode, Date codeExpirationDate) {

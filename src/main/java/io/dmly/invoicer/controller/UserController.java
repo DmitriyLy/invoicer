@@ -6,6 +6,7 @@ import io.dmly.invoicer.model.InvoicerUserDetails;
 import io.dmly.invoicer.model.User;
 import io.dmly.invoicer.model.form.ChangePasswordForm;
 import io.dmly.invoicer.model.form.LoginForm;
+import io.dmly.invoicer.model.form.UpdatePasswordForm;
 import io.dmly.invoicer.model.form.UpdateUserDetailsForm;
 import io.dmly.invoicer.response.HttpResponse;
 import io.dmly.invoicer.service.UserService;
@@ -147,6 +148,12 @@ public class UserController {
                 ),
                 HttpStatus.OK
         );
+    }
+
+    @PatchMapping(path = "/update/password")
+    public ResponseEntity<HttpResponse> updatePassword(Authentication authentication, @RequestBody @Valid UpdatePasswordForm form) {
+        userService.updatePassword(getUserFromAuthentication(authentication).getId(), form);
+        return ResponseEntity.ok(getResponse("Your password successfully updated.", HttpStatus.OK));
     }
 
     private URI getUrI(Long userId) {

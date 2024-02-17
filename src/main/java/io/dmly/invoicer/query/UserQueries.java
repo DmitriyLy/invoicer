@@ -66,4 +66,7 @@ public class UserQueries {
             WHERE
                 id = :id
             """;
+    public static final String UPDATE_PASSWORD_BY_USER_ID_QUERY = """
+            UPDATE Users SET password = :password WHERE id = :id
+            """;
 }
