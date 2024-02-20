@@ -3,18 +3,21 @@ package io.dmly.invoicer.controller;
 import io.dmly.invoicer.entitymapper.UserDtoMapper;
 import io.dmly.invoicer.jwt.provider.TokenProvider;
 import io.dmly.invoicer.model.InvoicerUserDetails;
+import io.dmly.invoicer.model.Role;
 import io.dmly.invoicer.model.User;
 import io.dmly.invoicer.model.form.ChangePasswordForm;
 import io.dmly.invoicer.model.form.LoginForm;
 import io.dmly.invoicer.model.form.UpdatePasswordForm;
 import io.dmly.invoicer.model.form.UpdateUserDetailsForm;
 import io.dmly.invoicer.response.HttpResponse;
+import io.dmly.invoicer.service.RoleService;
 import io.dmly.invoicer.service.UserService;
 import io.dmly.invoicer.utils.HttpResponseProvider;
 import io.dmly.invoicer.utils.TokenExtractor;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
@@ -27,10 +30,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static io.dmly.invoicer.security.constant.SecurityConstants.ACCESS_TOKEN;
 import static io.dmly.invoicer.security.constant.SecurityConstants.REFRESH_TOKEN;
@@ -45,6 +45,7 @@ public class UserController {
     private final TokenProvider tokenProvider;
     private final HttpResponseProvider httpResponseProvider;
     private final TokenExtractor tokenExtractor;
+    private final RoleService roleService;
 
     @PostMapping(path = "/login")
     public ResponseEntity<HttpResponse> login(@RequestBody @Valid LoginForm loginForm) {
@@ -69,14 +70,18 @@ public class UserController {
         User storedUser = userService.createUser(user);
         return ResponseEntity
                 .created(getUrI(storedUser.getId()))
-                .body(getResponse(storedUser,"User created", HttpStatus.CREATED));
+                .body(getResponse(storedUser, "User created", HttpStatus.CREATED));
     }
 
     @GetMapping("/profile")
     public ResponseEntity<HttpResponse> profile(Authentication authentication) {
         User user = getUserFromAuthentication(authentication);
         return ResponseEntity
-                .ok(getResponse(user, "User profile provided", HttpStatus.OK));
+                .ok(getResponse(
+                        user,
+                        roleService.getRoles(),
+                        "User profile provided",
+                        HttpStatus.OK));
     }
 
     @PatchMapping("/update")
@@ -142,6 +147,7 @@ public class UserController {
         return new ResponseEntity<>(
                 getResponse(
                         user,
+                        Collections.emptyList(),
                         getTokensMap(tokenProvider.getAccessToken(user), refreshToken.get()),
                         "Access token updated.",
                         HttpStatus.OK
@@ -154,6 +160,20 @@ public class UserController {
     public ResponseEntity<HttpResponse> updatePassword(Authentication authentication, @RequestBody @Valid UpdatePasswordForm form) {
         userService.updatePassword(getUserFromAuthentication(authentication).getId(), form);
         return ResponseEntity.ok(getResponse("Your password successfully updated.", HttpStatus.OK));
+    }
+
+    @PatchMapping(path = "/update/role/{roleName}")
+    public ResponseEntity<HttpResponse> updateRole(Authentication authentication, @PathVariable String roleName) {
+        Long id = getUserFromAuthentication(authentication).getId();
+        roleService.updateUserRole(id, roleName);
+        return ResponseEntity.ok(
+                getResponse(
+                        userService.get(id),
+                        roleService.getRoles(),
+                        "Your roles successfully updated.",
+                        HttpStatus.OK
+                )
+        );
     }
 
     private URI getUrI(Long userId) {
@@ -179,21 +199,28 @@ public class UserController {
     }
 
     private HttpResponse getLoginSuccessUserResponse(User user) {
-        return getResponse(user, getTokensMap(user), "Login success", HttpStatus.OK);
+        return getResponse(user, null, getTokensMap(user), "Login success", HttpStatus.OK);
     }
 
     private HttpResponse getResponse(User user, String message, HttpStatus status) {
-        return getResponse(user, Collections.emptyMap(), message, status);
+        return getResponse(user, null, Collections.emptyMap(), message, status);
     }
 
     private HttpResponse getResponse(String message, HttpStatus status) {
-        return getResponse(null, Collections.emptyMap(), message, status);
+        return getResponse(null, null, Collections.emptyMap(), message, status);
     }
 
-    private HttpResponse getResponse(User user, Map<String, Object> data, String message, HttpStatus status) {
+    private HttpResponse getResponse(User user, Collection<Role> roles, String message, HttpStatus status) {
+        return getResponse(user, roles, Collections.emptyMap(), message, status);
+    }
+
+    private HttpResponse getResponse(User user, Collection<Role> roles, Map<String, Object> data, String message, HttpStatus status) {
         Map<String, Object> responseData = new HashMap<>();
 
         Optional.ofNullable(user).ifPresent(value -> responseData.put("user", userDtoMapper.fromUser(value)));
+        if (CollectionUtils.isNotEmpty(roles)) {
+            responseData.put("roles", roles);
+        }
 
         if (MapUtils.isNotEmpty(data)) {
             responseData.putAll(data);

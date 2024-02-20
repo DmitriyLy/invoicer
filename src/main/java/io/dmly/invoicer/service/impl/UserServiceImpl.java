@@ -142,13 +142,18 @@ public class UserServiceImpl implements UserService {
             throw new ApiException("Password and confirmation don't match, Please try again.");
         }
 
-        var user = userRepository.get(id).orElseThrow(() -> new ApiException("Cannot find user by specified id"));
+        var user = get(id);
 
         if (!passwordEncoder.matches(form.getCurrentPassword(), user.getPassword())) {
             throw new ApiException("Current password is incorrect. Please try again.");
         }
 
         userRepository.updatePassword(id, form.getNewPassword());
+    }
+
+    @Override
+    public User get(Long id) {
+        return userRepository.get(id).orElseThrow(() -> new ApiException("Cannot find user by specified id"));
     }
 
     protected void sendCodeViaSms(User userDto, String verificationCode, Date codeExpirationDate) {

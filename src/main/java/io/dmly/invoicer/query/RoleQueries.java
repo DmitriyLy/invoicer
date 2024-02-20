@@ -19,4 +19,12 @@ public class RoleQueries {
             inner join userroles on users.id = userroles.user_id
             inner join roles on userroles.role_id = roles.id
             WHERE users.email = :email""";
+
+    public static final String SELECT_ROLES_NAME_QUERY = """
+            SELECT * FROM Roles ORDER BY id            
+            """;
+
+    public static final String UPDATE_ROLE_FOR_USER_QUERY = """
+            UPDATE UserRoles SET role_id = :roleId WHERE user_id = :userId
+            """;
 }

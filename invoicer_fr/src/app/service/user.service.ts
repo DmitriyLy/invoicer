@@ -41,7 +41,7 @@ export class UserService {
 
   update$ = (user: User) => <Observable<CustomHttpResponse<Profile>>>
     this.http.patch<CustomHttpResponse<Profile>>
-    (`${this.server}/api/v1/user/update`, user,{headers: {'Authorization': this.token}})
+    (`${this.server}/api/v1/user/update`, user, {headers: {'Authorization': this.token}})
       .pipe(
         tap(console.log),
         catchError(this.handleError)
@@ -49,7 +49,7 @@ export class UserService {
 
   refreshToken$ = () => <Observable<CustomHttpResponse<Profile>>>
     this.http.post<CustomHttpResponse<Profile>>
-    (`${this.server}/api/v1/user/refresh/token`, null, {headers: { 'Authorization': `Bearer ${localStorage.getItem(Key.REFRESH_TOKEN)}` }})
+    (`${this.server}/api/v1/user/refresh/token`, null, {headers: {'Authorization': `Bearer ${localStorage.getItem(Key.REFRESH_TOKEN)}`}})
       .pipe(
         tap(response => {
           console.log(response);
@@ -61,9 +61,21 @@ export class UserService {
         catchError(this.handleError)
       );
 
-  updatePassword$ = (form: { currentPassword: string, newPassword: string, confirmPassword: string }) => <Observable<CustomHttpResponse<Profile>>>
+  updatePassword$ = (form: {
+    currentPassword: string,
+    newPassword: string,
+    confirmPassword: string
+  }) => <Observable<CustomHttpResponse<Profile>>>
     this.http.patch<CustomHttpResponse<Profile>>
     (`${this.server}/api/v1/user/update/password`, form)
+      .pipe(
+        tap(console.log),
+        catchError(this.handleError)
+      );
+
+  updateUserRole$ = (roleName: string) => <Observable<CustomHttpResponse<Profile>>>
+    this.http.patch<CustomHttpResponse<Profile>>
+    (`${this.server}/api/v1/user/update/role/${roleName}`, {})
       .pipe(
         tap(console.log),
         catchError(this.handleError)

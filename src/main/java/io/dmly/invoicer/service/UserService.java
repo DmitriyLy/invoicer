@@ -16,4 +16,5 @@ public interface UserService {
     void activateAccount(String email);
     User updateUserRetails(UpdateUserDetailsForm updateDetails);
     void updatePassword(Long id, UpdatePasswordForm form);
+    User get(Long id);
 }

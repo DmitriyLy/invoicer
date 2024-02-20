@@ -1,5 +1,6 @@
 package io.dmly.invoicer.repository.impl;
 
+import io.dmly.invoicer.exception.ApiException;
 import io.dmly.invoicer.model.Role;
 import io.dmly.invoicer.repository.RoleRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,8 +15,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import static io.dmly.invoicer.query.RoleQueries.SELECT_ROLE_BY_NAME_QUERY;
-import static io.dmly.invoicer.query.RoleQueries.SELECT_ROLE_BY_USER_ID;
+import static io.dmly.invoicer.query.RoleQueries.*;
 import static io.dmly.invoicer.query.UserQueries.INSERT_SET_ROLE_FOR_USER_QUERY;
 
 @Repository
@@ -31,8 +31,14 @@ public class RoleRepositoryImpl implements RoleRepository<Role> {
     }
 
     @Override
-    public Collection<Role> list(int page, int pageSize) {
-        return null;
+    public Collection<Role> list() {
+        log.info("Getting all roles");
+        try {
+            return jdbcTemplate.query(SELECT_ROLES_NAME_QUERY, roleRowMapper);
+        } catch (Exception e) {
+            log.error("An error occurred while fetching roles", e);
+            throw new ApiException(e.getMessage(), e);
+        }
     }
 
     @Override
@@ -54,15 +60,15 @@ public class RoleRepositoryImpl implements RoleRepository<Role> {
     public void addRoleToUser(Long userId, String roleName) {
         log.info("Adding role {} to a user with id {}", roleName, userId);
         try {
-            Role role = jdbcTemplate.queryForObject(SELECT_ROLE_BY_NAME_QUERY, Map.of("roleName", roleName), roleRowMapper);
+            Role role =  getRoleByName(roleName);
             jdbcTemplate.update(INSERT_SET_ROLE_FOR_USER_QUERY,
                     Map.of("userId", userId,
                             "roleId", Objects.requireNonNull(role).getId())
             );
         } catch (Exception e) {
             log.error("An error occurred while setting role to a user", e);
+            throw new ApiException(e.getMessage(), e);
         }
-
     }
 
     @Override
@@ -84,6 +90,20 @@ public class RoleRepositoryImpl implements RoleRepository<Role> {
 
     @Override
     public void updateUserRole(Long userId, String roleName) {
+        log.info("Updating user role, user id '{}', role name '{}'", userId, roleName);
+        try {
+            Role role =  getRoleByName(roleName);
+            jdbcTemplate.update(UPDATE_ROLE_FOR_USER_QUERY,
+                    Map.of("userId", userId,
+                            "roleId", Objects.requireNonNull(role).getId())
+            );
+        } catch (Exception e) {
+            log.error("An error occurred while updating user role", e);
+            throw new ApiException(e.getMessage(), e);
+        }
+    }
 
+    private Role getRoleByName(String roleName) {
+        return jdbcTemplate.queryForObject(SELECT_ROLE_BY_NAME_QUERY, Map.of("roleName", roleName), roleRowMapper);
     }
 }

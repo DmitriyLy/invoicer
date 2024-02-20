@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.Optional;
 
 @Service
@@ -26,5 +27,15 @@ public class RoleServiceImpl implements RoleService {
         }
 
         return roleByUserId.get();
+    }
+
+    @Override
+    public Collection<Role> getRoles() {
+        return roleRepository.list();
+    }
+
+    @Override
+    public void updateUserRole(Long userId, String roleName) {
+        roleRepository.updateUserRole(userId, roleName);
     }
 }
