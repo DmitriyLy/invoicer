@@ -5,6 +5,7 @@ import io.dmly.invoicer.model.ResetPasswordVerificationEntity;
 import io.dmly.invoicer.model.Role;
 import io.dmly.invoicer.model.User;
 import io.dmly.invoicer.model.enumaration.VerificationUrlType;
+import io.dmly.invoicer.model.form.UpdateAccountSettingsForm;
 import io.dmly.invoicer.model.form.UpdateUserDetailsForm;
 import io.dmly.invoicer.repository.RoleRepository;
 import io.dmly.invoicer.repository.UserRepository;
@@ -219,6 +220,19 @@ public class UserRepositoryImpl implements UserRepository<User> {
                 "id", id,
                 "password", passwordEncoder.encode(newPassword)
         ));
+    }
+
+    @Override
+    public void saveAccountSettings(Long id, UpdateAccountSettingsForm form) {
+        int updated = jdbcTemplate.update(UPDATE_ACCOUNT_SETTINGS_QUERY, Map.of(
+                "id", id,
+                "enabled", form.enabled(),
+                "notLocked", form.notLocked()
+        ));
+
+        if (updated == 0) {
+            throw new ApiException("Nothing was updated. Please check user id");
+        }
     }
 
     private Integer getEmailCount(String email) {

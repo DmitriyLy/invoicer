@@ -69,4 +69,7 @@ public class UserQueries {
     public static final String UPDATE_PASSWORD_BY_USER_ID_QUERY = """
             UPDATE Users SET password = :password WHERE id = :id
             """;
+    public static final String UPDATE_ACCOUNT_SETTINGS_QUERY = """
+            UPDATE Users SET enabled = :enabled, non_locked = :notLocked WHERE id = :id
+            """;
 }

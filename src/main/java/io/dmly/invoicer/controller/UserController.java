@@ -5,10 +5,7 @@ import io.dmly.invoicer.jwt.provider.TokenProvider;
 import io.dmly.invoicer.model.InvoicerUserDetails;
 import io.dmly.invoicer.model.Role;
 import io.dmly.invoicer.model.User;
-import io.dmly.invoicer.model.form.ChangePasswordForm;
-import io.dmly.invoicer.model.form.LoginForm;
-import io.dmly.invoicer.model.form.UpdatePasswordForm;
-import io.dmly.invoicer.model.form.UpdateUserDetailsForm;
+import io.dmly.invoicer.model.form.*;
 import io.dmly.invoicer.response.HttpResponse;
 import io.dmly.invoicer.service.RoleService;
 import io.dmly.invoicer.service.UserService;
@@ -171,6 +168,20 @@ public class UserController {
                         userService.get(id),
                         roleService.getRoles(),
                         "Your roles successfully updated.",
+                        HttpStatus.OK
+                )
+        );
+    }
+
+    @PatchMapping(path = "/update/account/settings")
+    public ResponseEntity<HttpResponse> updateAccountSettings(Authentication authentication, @RequestBody UpdateAccountSettingsForm form) {
+        Long id = getUserFromAuthentication(authentication).getId();
+        userService.updateAccountSettings(id, form);
+        return ResponseEntity.ok(
+                getResponse(
+                        userService.get(id),
+                        roleService.getRoles(),
+                        "Account settings successfully updated.",
                         HttpStatus.OK
                 )
         );

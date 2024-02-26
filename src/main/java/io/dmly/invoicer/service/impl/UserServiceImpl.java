@@ -5,6 +5,7 @@ import io.dmly.invoicer.model.ResetPasswordVerificationEntity;
 import io.dmly.invoicer.model.User;
 import io.dmly.invoicer.model.enumaration.VerificationUrlType;
 import io.dmly.invoicer.model.form.ChangePasswordForm;
+import io.dmly.invoicer.model.form.UpdateAccountSettingsForm;
 import io.dmly.invoicer.model.form.UpdatePasswordForm;
 import io.dmly.invoicer.model.form.UpdateUserDetailsForm;
 import io.dmly.invoicer.repository.UserRepository;
@@ -154,6 +155,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public User get(Long id) {
         return userRepository.get(id).orElseThrow(() -> new ApiException("Cannot find user by specified id"));
+    }
+
+    @Override
+    public void updateAccountSettings(Long id, UpdateAccountSettingsForm form) {
+        log.info("updating account settings for user id {}", id);
+        userRepository.saveAccountSettings(id, form);
     }
 
     protected void sendCodeViaSms(User userDto, String verificationCode, Date codeExpirationDate) {
