@@ -28,4 +28,5 @@ public interface UserRepository <T extends User> {
     void updateDetails(UpdateUserDetailsForm updateDetails);
     void updatePassword(Long id, @NotEmpty(message = "New password is not specified") String newPassword);
     void saveAccountSettings(Long id, UpdateAccountSettingsForm form);
+    void toggleMfa(Long id);
 }

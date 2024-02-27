@@ -89,6 +89,14 @@ export class UserService {
         catchError(this.handleError)
       );
 
+  toggleMfa$ = () => <Observable<CustomHttpResponse<Profile>>>
+    this.http.patch<CustomHttpResponse<Profile>>
+    (`${this.server}/api/v1/user/toggle/mfa`, {})
+      .pipe(
+        tap(console.log),
+        catchError(this.handleError)
+      );
+
   private handleError(error: HttpErrorResponse): Observable<never> {
     console.log(error);
     let errorMessage: string;

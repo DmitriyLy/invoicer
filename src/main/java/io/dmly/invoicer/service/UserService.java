@@ -19,4 +19,5 @@ public interface UserService {
     void updatePassword(Long id, UpdatePasswordForm form);
     User get(Long id);
     void updateAccountSettings(Long id, UpdateAccountSettingsForm form);
+    void toggleMfa(Long id);
 }

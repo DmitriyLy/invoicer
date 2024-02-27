@@ -187,6 +187,20 @@ public class UserController {
         );
     }
 
+    @PatchMapping(path = "/toggle/mfa")
+    public ResponseEntity<HttpResponse> toggleMfa(Authentication authentication) {
+        Long id = getUserFromAuthentication(authentication).getId();
+        userService.toggleMfa(id);
+        return ResponseEntity.ok(
+                getResponse(
+                        userService.get(id),
+                        roleService.getRoles(),
+                        "MFA settings successfully updated.",
+                        HttpStatus.OK
+                )
+        );
+    }
+
     private URI getUrI(Long userId) {
         try {
             return new URI(ServletUriComponentsBuilder

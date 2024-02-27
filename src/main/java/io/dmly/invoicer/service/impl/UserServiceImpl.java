@@ -163,6 +163,12 @@ public class UserServiceImpl implements UserService {
         userRepository.saveAccountSettings(id, form);
     }
 
+    @Override
+    public void toggleMfa(Long id) {
+        log.info("toggling MFA settings for user id {}", id);
+        userRepository.toggleMfa(id);
+    }
+
     protected void sendCodeViaSms(User userDto, String verificationCode, Date codeExpirationDate) {
         String message = String.format("Invoicer verification code: %s, active till %s", verificationCode, codeExpirationDate);
         log.info("-----> Sending verification code in SMS >>>>>>>> " + message);

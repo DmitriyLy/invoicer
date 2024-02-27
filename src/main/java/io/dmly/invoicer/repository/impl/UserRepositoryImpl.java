@@ -235,6 +235,15 @@ public class UserRepositoryImpl implements UserRepository<User> {
         }
     }
 
+    @Override
+    public void toggleMfa(Long id) {
+        int updated = jdbcTemplate.update(UPDATE_MFA_SETTINGS_QUERY, Map.of("id", id));
+
+        if (updated == 0) {
+            throw new ApiException("Nothing was updated. Please check user id");
+        }
+    }
+
     private Integer getEmailCount(String email) {
         return jdbcTemplate.queryForObject(GET_EMAILS_COUNT_QUERY, Map.of("email", email), Integer.class);
     }

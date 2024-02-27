@@ -110,6 +110,26 @@ export class ProfileComponent implements OnInit {
       );
   }
 
+  toggleMfa(): void {
+    this.isLoadingSubject.next(true);
+    this.profileState$ = this.userService.toggleMfa$()
+      .pipe(
+        map(response => {
+          this.dataSubject.next({...response, data: response.data});
+          this.isLoadingSubject.next(false);
+          return {
+            dataState: DataState.LOADED,
+            appData: this.dataSubject.value
+          };
+        }),
+        startWith({dataState: DataState.LOADED, appData: this.dataSubject.value}),
+        catchError((error: string) => {
+          this.isLoadingSubject.next(false);
+          return of({dataState: DataState.LOADED, appData: this.dataSubject.value, error})
+        })
+      );
+  }
+
   private performPasswordUpdate(passwordUpdateForm: NgForm): void {
     this.profileState$ = this.userService.updatePassword$(passwordUpdateForm.value)
       .pipe(

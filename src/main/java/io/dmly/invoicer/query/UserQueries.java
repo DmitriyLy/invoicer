@@ -72,4 +72,7 @@ public class UserQueries {
     public static final String UPDATE_ACCOUNT_SETTINGS_QUERY = """
             UPDATE Users SET enabled = :enabled, non_locked = :notLocked WHERE id = :id
             """;
+    public static final String UPDATE_MFA_SETTINGS_QUERY = """
+            UPDATE Users SET using_mfa = (not using_mfa) WHERE id = :id
+            """;
 }
