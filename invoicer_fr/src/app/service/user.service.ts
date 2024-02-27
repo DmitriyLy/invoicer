@@ -97,6 +97,14 @@ export class UserService {
         catchError(this.handleError)
       );
 
+  updateImage$ = (formData: FormData) => <Observable<CustomHttpResponse<Profile>>>
+    this.http.post<CustomHttpResponse<Profile>>
+    (`${this.server}/api/v1/user/upload/image`, formData)
+      .pipe(
+        tap(console.log),
+        catchError(this.handleError)
+      );
+
   private handleError(error: HttpErrorResponse): Observable<never> {
     console.log(error);
     let errorMessage: string;

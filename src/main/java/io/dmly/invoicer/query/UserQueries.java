@@ -75,4 +75,7 @@ public class UserQueries {
     public static final String UPDATE_MFA_SETTINGS_QUERY = """
             UPDATE Users SET using_mfa = (not using_mfa) WHERE id = :id
             """;
+    public static final String UPDATE_IMAGE_URL_QUERY = """
+            UPDATE Users SET image_url = :url WHERE id = :id
+            """;
 }

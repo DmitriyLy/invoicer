@@ -5,6 +5,7 @@ import io.dmly.invoicer.model.form.ChangePasswordForm;
 import io.dmly.invoicer.model.form.UpdateAccountSettingsForm;
 import io.dmly.invoicer.model.form.UpdatePasswordForm;
 import io.dmly.invoicer.model.form.UpdateUserDetailsForm;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface UserService {
     User createUser(User user);
@@ -20,4 +21,5 @@ public interface UserService {
     User get(Long id);
     void updateAccountSettings(Long id, UpdateAccountSettingsForm form);
     void toggleMfa(Long id);
+    void uploadImage(User user, MultipartFile image);
 }

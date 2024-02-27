@@ -23,6 +23,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
@@ -196,6 +197,21 @@ public class UserController {
                         userService.get(id),
                         roleService.getRoles(),
                         "MFA settings successfully updated.",
+                        HttpStatus.OK
+                )
+        );
+    }
+
+    @PostMapping(path = "/upload/image")
+    public ResponseEntity<HttpResponse> uploadUserImage(Authentication authentication, @RequestParam("image") MultipartFile image) {
+        User user = getUserFromAuthentication(authentication);
+        userService.uploadImage(user, image);
+        //userService.toggleMfa(id);
+        return ResponseEntity.ok(
+                getResponse(
+                        user,
+                        roleService.getRoles(),
+                        "Image successfully updated.",
                         HttpStatus.OK
                 )
         );

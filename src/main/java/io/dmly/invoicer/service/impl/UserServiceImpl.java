@@ -10,6 +10,7 @@ import io.dmly.invoicer.model.form.UpdatePasswordForm;
 import io.dmly.invoicer.model.form.UpdateUserDetailsForm;
 import io.dmly.invoicer.repository.UserRepository;
 import io.dmly.invoicer.service.EmailService;
+import io.dmly.invoicer.service.ImageService;
 import io.dmly.invoicer.service.UserService;
 import io.dmly.invoicer.service.VerificationUrlGenerator;
 import lombok.RequiredArgsConstructor;
@@ -19,10 +20,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Optional;
+
+import static io.dmly.invoicer.constants.Constants.USER_IMAGE_PATH;
 
 @Slf4j
 @Service
@@ -32,6 +37,7 @@ public class UserServiceImpl implements UserService {
     private final VerificationUrlGenerator verificationUrlGenerator;
     private final EmailService emailService;
     private final PasswordEncoder passwordEncoder;
+    private final ImageService imageService;
 
     @Override
     public User createUser(User user) {
@@ -167,6 +173,19 @@ public class UserServiceImpl implements UserService {
     public void toggleMfa(Long id) {
         log.info("toggling MFA settings for user id {}", id);
         userRepository.toggleMfa(id);
+    }
+
+    @Override
+    public void uploadImage(User user, MultipartFile image) {
+        String savedImageName = imageService.saveImage(image);
+        String url = ServletUriComponentsBuilder
+                .fromCurrentContextPath()
+                .path("/" + USER_IMAGE_PATH + "/" + savedImageName)
+                .toUriString();
+
+        userRepository.updateUserImageUrl(user.getId(), url);
+
+        user.setImageUrl(url);
     }
 
     protected void sendCodeViaSms(User userDto, String verificationCode, Date codeExpirationDate) {

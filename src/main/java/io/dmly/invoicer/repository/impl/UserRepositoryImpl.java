@@ -244,6 +244,16 @@ public class UserRepositoryImpl implements UserRepository<User> {
         }
     }
 
+    @Override
+    public void updateUserImageUrl(Long id, String url) {
+        int updated = jdbcTemplate.update(UPDATE_IMAGE_URL_QUERY, Map.of("id", id,
+                "url", url));
+
+        if (updated == 0) {
+            throw new ApiException("Nothing was updated. Please check user id");
+        }
+    }
+
     private Integer getEmailCount(String email) {
         return jdbcTemplate.queryForObject(GET_EMAILS_COUNT_QUERY, Map.of("email", email), Integer.class);
     }

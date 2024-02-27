@@ -130,6 +130,26 @@ export class ProfileComponent implements OnInit {
       );
   }
 
+  updateImage(image: File): void {
+    this.isLoadingSubject.next(true);
+    this.profileState$ = this.userService.updateImage$(this.getFormData(image))
+      .pipe(
+        map(response => {
+          this.dataSubject.next({...response, data: response.data});
+          this.isLoadingSubject.next(false);
+          return {
+            dataState: DataState.LOADED,
+            appData: this.dataSubject.value
+          };
+        }),
+        startWith({dataState: DataState.LOADED, appData: this.dataSubject.value}),
+        catchError((error: string) => {
+          this.isLoadingSubject.next(false);
+          return of({dataState: DataState.LOADED, appData: this.dataSubject.value, error})
+        })
+      );
+  }
+
   private performPasswordUpdate(passwordUpdateForm: NgForm): void {
     this.profileState$ = this.userService.updatePassword$(passwordUpdateForm.value)
       .pipe(
@@ -149,4 +169,9 @@ export class ProfileComponent implements OnInit {
       );
   }
 
+  private getFormData(image: File): FormData {
+    const formData = new FormData();
+    formData.append('image', image);
+    return formData
+  }
 }
