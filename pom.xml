@@ -20,6 +20,7 @@
 		<com.auth0.java-jwt.version>4.4.0</com.auth0.java-jwt.version>
 		<org.apache.commons.commons-collections4.version>4.4</org.apache.commons.commons-collections4.version>
 		<commons-io.version>2.15.1</commons-io.version>
+		<nl.basjes.parse.useragent.version>7.25.0</nl.basjes.parse.useragent.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -100,6 +101,12 @@
 			<artifactId>commons-collections4</artifactId>
 			<version>${org.apache.commons.commons-collections4.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>nl.basjes.parse.useragent</groupId>
+			<artifactId>yauaa</artifactId>
+			<version>${nl.basjes.parse.useragent.version}</version>
+		</dependency>
+
 	</dependencies>
 
 	<profiles>

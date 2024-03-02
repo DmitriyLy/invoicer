@@ -1,12 +1,15 @@
 package io.dmly.invoicer.controller;
 
 import io.dmly.invoicer.entitymapper.UserDtoMapper;
+import io.dmly.invoicer.event.ApplicationUserEvent;
 import io.dmly.invoicer.jwt.provider.TokenProvider;
 import io.dmly.invoicer.model.InvoicerUserDetails;
 import io.dmly.invoicer.model.Role;
 import io.dmly.invoicer.model.User;
+import io.dmly.invoicer.model.UserEvent;
 import io.dmly.invoicer.model.form.*;
 import io.dmly.invoicer.response.HttpResponse;
+import io.dmly.invoicer.service.EventService;
 import io.dmly.invoicer.service.RoleService;
 import io.dmly.invoicer.service.UserService;
 import io.dmly.invoicer.utils.HttpResponseProvider;
@@ -17,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -30,6 +34,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
 
+import static io.dmly.invoicer.model.enumaration.EventType.*;
 import static io.dmly.invoicer.security.constant.SecurityConstants.ACCESS_TOKEN;
 import static io.dmly.invoicer.security.constant.SecurityConstants.REFRESH_TOKEN;
 
@@ -44,9 +49,12 @@ public class UserController {
     private final HttpResponseProvider httpResponseProvider;
     private final TokenExtractor tokenExtractor;
     private final RoleService roleService;
+    private final ApplicationEventPublisher applicationEventPublisher;
+    private final EventService eventService;
 
     @PostMapping(path = "/login")
     public ResponseEntity<HttpResponse> login(@RequestBody @Valid LoginForm loginForm) {
+        applicationEventPublisher.publishEvent(new ApplicationUserEvent(LOGIN_ATTEMPT, loginForm.getEmail()));
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginForm.getEmail(), loginForm.getPassword()));
         User user = getUserFromAuthentication(authentication);
 
@@ -57,6 +65,7 @@ public class UserController {
             userResponse = getResponse(user, "Verification code has been sent", HttpStatus.OK);
         } else {
             userResponse = getLoginSuccessUserResponse(user);
+            applicationEventPublisher.publishEvent(new ApplicationUserEvent(LOGIN_ATTEMPT_SUCCESS, loginForm.getEmail()));
         }
 
         return ResponseEntity
@@ -78,6 +87,7 @@ public class UserController {
                 .ok(getResponse(
                         user,
                         roleService.getRoles(),
+                        eventService.getEventsByUserId(user.getId()),
                         "User profile provided",
                         HttpStatus.OK));
     }
@@ -85,6 +95,7 @@ public class UserController {
     @PatchMapping("/update")
     public ResponseEntity<HttpResponse> update(@RequestBody @Valid UpdateUserDetailsForm userDetailsForm) {
         User user = userService.updateUserRetails(userDetailsForm);
+        applicationEventPublisher.publishEvent(new ApplicationUserEvent(PROFILE_UPDATE, user.getEmail()));
         return ResponseEntity
                 .ok(getResponse(user, "User profile updated", HttpStatus.OK));
     }
@@ -146,6 +157,7 @@ public class UserController {
                 getResponse(
                         user,
                         Collections.emptyList(),
+                        Collections.emptyList(),
                         getTokensMap(tokenProvider.getAccessToken(user), refreshToken.get()),
                         "Access token updated.",
                         HttpStatus.OK
@@ -156,14 +168,18 @@ public class UserController {
 
     @PatchMapping(path = "/update/password")
     public ResponseEntity<HttpResponse> updatePassword(Authentication authentication, @RequestBody @Valid UpdatePasswordForm form) {
-        userService.updatePassword(getUserFromAuthentication(authentication).getId(), form);
+        User user = getUserFromAuthentication(authentication);
+        userService.updatePassword(user.getId(), form);
+        applicationEventPublisher.publishEvent(new ApplicationUserEvent(PASSWORD_UPDATE, user.getEmail()));
         return ResponseEntity.ok(getResponse("Your password successfully updated.", HttpStatus.OK));
     }
 
     @PatchMapping(path = "/update/role/{roleName}")
     public ResponseEntity<HttpResponse> updateRole(Authentication authentication, @PathVariable String roleName) {
-        Long id = getUserFromAuthentication(authentication).getId();
+        User user = getUserFromAuthentication(authentication);
+        Long id = user.getId();
         roleService.updateUserRole(id, roleName);
+        applicationEventPublisher.publishEvent(new ApplicationUserEvent(ROLE_UPDATE, user.getEmail()));
         return ResponseEntity.ok(
                 getResponse(
                         userService.get(id),
@@ -176,8 +192,10 @@ public class UserController {
 
     @PatchMapping(path = "/update/account/settings")
     public ResponseEntity<HttpResponse> updateAccountSettings(Authentication authentication, @RequestBody UpdateAccountSettingsForm form) {
-        Long id = getUserFromAuthentication(authentication).getId();
+        User user = getUserFromAuthentication(authentication);
+        Long id = user.getId();
         userService.updateAccountSettings(id, form);
+        applicationEventPublisher.publishEvent(new ApplicationUserEvent(ACCOUNT_SETTINGS_UPDATE, user.getEmail()));
         return ResponseEntity.ok(
                 getResponse(
                         userService.get(id),
@@ -190,8 +208,10 @@ public class UserController {
 
     @PatchMapping(path = "/toggle/mfa")
     public ResponseEntity<HttpResponse> toggleMfa(Authentication authentication) {
-        Long id = getUserFromAuthentication(authentication).getId();
+        User user = getUserFromAuthentication(authentication);
+        Long id = user.getId();
         userService.toggleMfa(id);
+        applicationEventPublisher.publishEvent(new ApplicationUserEvent(MFA_UPDATE, user.getEmail()));
         return ResponseEntity.ok(
                 getResponse(
                         userService.get(id),
@@ -207,6 +227,7 @@ public class UserController {
         User user = getUserFromAuthentication(authentication);
         userService.uploadImage(user, image);
         //userService.toggleMfa(id);
+        applicationEventPublisher.publishEvent(new ApplicationUserEvent(PROFILE_PICTURE_UPDATE, user.getEmail()));
         return ResponseEntity.ok(
                 getResponse(
                         user,
@@ -240,27 +261,36 @@ public class UserController {
     }
 
     private HttpResponse getLoginSuccessUserResponse(User user) {
-        return getResponse(user, null, getTokensMap(user), "Login success", HttpStatus.OK);
+        return getResponse(user, null, Collections.emptyList(), getTokensMap(user), "Login success", HttpStatus.OK);
     }
 
     private HttpResponse getResponse(User user, String message, HttpStatus status) {
-        return getResponse(user, null, Collections.emptyMap(), message, status);
+        return getResponse(user, null, Collections.emptyList(), Collections.emptyMap(), message, status);
     }
 
     private HttpResponse getResponse(String message, HttpStatus status) {
-        return getResponse(null, null, Collections.emptyMap(), message, status);
+        return getResponse(null, null, Collections.emptyList(), Collections.emptyMap(), message, status);
     }
 
     private HttpResponse getResponse(User user, Collection<Role> roles, String message, HttpStatus status) {
-        return getResponse(user, roles, Collections.emptyMap(), message, status);
+        return getResponse(user, roles, Collections.emptyList(), Collections.emptyMap(), message, status);
     }
 
-    private HttpResponse getResponse(User user, Collection<Role> roles, Map<String, Object> data, String message, HttpStatus status) {
+    private HttpResponse getResponse(User user, Collection<Role> roles, Collection<UserEvent> userEvents, String message, HttpStatus status) {
+        return getResponse(user, roles, userEvents, Collections.emptyMap(), message, status);
+    }
+
+    private HttpResponse getResponse(User user, Collection<Role> roles, Collection<UserEvent> userEvents,  Map<String, Object> data, String message, HttpStatus status) {
         Map<String, Object> responseData = new HashMap<>();
 
         Optional.ofNullable(user).ifPresent(value -> responseData.put("user", userDtoMapper.fromUser(value)));
+
         if (CollectionUtils.isNotEmpty(roles)) {
             responseData.put("roles", roles);
+        }
+
+        if (CollectionUtils.isNotEmpty(userEvents)) {
+            responseData.put("events", userEvents);
         }
 
         if (MapUtils.isNotEmpty(data)) {

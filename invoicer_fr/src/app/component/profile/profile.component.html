@@ -297,7 +297,7 @@
                    <div class="card" style="border-radius: 8px;">
                       <div class="card-body">
                          <h5 class="card-title">Account Activities</h5>
-                         <h6 class="card-subtitle mb-2 text-muted">Latest activities on your account.                        </h6>
+                         <h6 class="card-subtitle mb-2 text-muted">Latest activities on your account.</h6>
                          <table class="table table-hover">
                             <thead>
                                <tr>
@@ -310,16 +310,27 @@
                                </tr>
                             </thead>
                             <tbody>
-                               <tr >
-                                  <td>Chrome</td>
-                                  <td>192.168.1.209</td>
-                                  <td>01-15-2023 5:25:20</td>
+                               <tr *ngFor="let event of state?.appData?.data?.events">
+                                  <td>{{ event.device }}</td>
+                                  <td>{{ event.ipAddress }}</td>
+                                  <td>{{ event.createdAt | date: 'MMMM d, y, h:mm a' }}</td>
                                   <td>
-                                     <span class="badge pill bg-success">
-                                             LOGIN_ATTEMPT_SUCCESS
+                                     <span class="badge pill"
+                                           [ngClass]="[
+                                              event.type === EventType.LOGIN_ATTEMPT_SUCCESS ? 'bg-success' : '',
+                                              event.type === EventType.LOGIN_ATTEMPT ? 'bg-warning' : '',
+                                              event.type === EventType.PROFILE_UPDATE ? 'bg-primary' : '',
+                                              event.type === EventType.LOGIN_ATTEMPT_FAILURE ? 'bg-danger' : '',
+                                              event.type === EventType.PROFILE_PICTURE_UPDATE ? 'bg-primary' : '',
+                                              event.type === EventType.ROLE_UPDATE ? 'bg-info' : '',
+                                              event.type === EventType.ACCOUNT_SETTINGS_UPDATE ? 'bg-warning' : '',
+                                              event.type === EventType.PASSWORD_UPDATE ? 'bg-warning' : '',
+                                              event.type === EventType.MFA_UPDATE ? 'bg-info' : ''
+                                           ]">
+                                      {{ event.type }}
                                      </span>
                                   </td>
-                                  <td>You logged in successfully</td>
+                                  <td>{{ event.description }}</td>
                                   <td>
                                      <button type="button" class="btn btn-sm" style="background-color: #fd5d0d; font-weight: 450;">Report</button>
                                   </td>
