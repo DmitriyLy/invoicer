@@ -4,13 +4,14 @@ import {catchError, Observable, tap, throwError} from 'rxjs';
 import {CustomHttpResponse, Profile} from '../interface/appstates';
 import {User} from "../interface/user";
 import {Key} from "../enum/key.enum";
+import {JwtHelperService} from "@auth0/angular-jwt";
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
   private readonly server: string = 'http://localhost:8080';
-  private readonly token: string = '';
+  private jwtHelper = new JwtHelperService();
 
   constructor(private http: HttpClient) {
   }
@@ -33,7 +34,7 @@ export class UserService {
 
   profile$ = () => <Observable<CustomHttpResponse<Profile>>>
     this.http.get<CustomHttpResponse<Profile>>
-    (`${this.server}/api/v1/user/profile`, {headers: {'Authorization': this.token}})
+    (`${this.server}/api/v1/user/profile`)
       .pipe(
         tap(console.log),
         catchError(this.handleError)
@@ -41,7 +42,7 @@ export class UserService {
 
   update$ = (user: User) => <Observable<CustomHttpResponse<Profile>>>
     this.http.patch<CustomHttpResponse<Profile>>
-    (`${this.server}/api/v1/user/update`, user, {headers: {'Authorization': this.token}})
+    (`${this.server}/api/v1/user/update`, user)
       .pipe(
         tap(console.log),
         catchError(this.handleError)
@@ -104,6 +105,9 @@ export class UserService {
         tap(console.log),
         catchError(this.handleError)
       );
+
+  isAuthenticated = (): boolean => (this.jwtHelper.decodeToken<string>(localStorage.getItem(Key.TOKEN)) &&
+                                          !this.jwtHelper.isTokenExpired(localStorage.getItem(Key.TOKEN)));
 
   private handleError(error: HttpErrorResponse): Observable<never> {
     console.log(error);
