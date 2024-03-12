@@ -16,6 +16,11 @@ export class UserService {
   constructor(private http: HttpClient) {
   }
 
+  logout() {
+    localStorage.removeItem(Key.TOKEN);
+    localStorage.removeItem(Key.REFRESH_TOKEN);
+  }
+
   login$ = (email: string, password: string) => <Observable<CustomHttpResponse<Profile>>>
     this.http.post<CustomHttpResponse<Profile>>
     (`${this.server}/api/v1/user/login`, {email, password})
