@@ -2,6 +2,7 @@ package io.dmly.invoicer.security.constant;
 
 import java.util.List;
 
+import static io.dmly.invoicer.constants.Constants.CUSTOMER_IMAGE_PATH;
 import static io.dmly.invoicer.constants.Constants.USER_IMAGE_PATH;
 
 public class SecurityConstants {
@@ -15,7 +16,8 @@ public class SecurityConstants {
             "/api/v1/user/change-password",
             "/api/v1/user/activate/account",
             "/api/v1/user/refresh/token",
-            "/" + USER_IMAGE_PATH
+            "/" + USER_IMAGE_PATH,
+            "/" + CUSTOMER_IMAGE_PATH
     );
 
     public static final String ACCESS_TOKEN = "access_token";

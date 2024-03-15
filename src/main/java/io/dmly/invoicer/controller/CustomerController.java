@@ -32,7 +32,7 @@ public class CustomerController {
                         .timestamp(LocalDateTime.now().toString())
                         .data(Map.of(
                                 "user", userDetails.getUser(),
-                                "customers", customerService.getCustomers(page.orElse(0), size.orElse(10))
+                                "page", customerService.getCustomers(page.orElse(0), size.orElse(10))
                         ))
                         .message("Customers listed")
                         .status(HttpStatus.OK)
