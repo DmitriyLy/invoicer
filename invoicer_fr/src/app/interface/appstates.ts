@@ -3,6 +3,7 @@ import { User } from "./user";
 import {UserEvent} from "./user-event";
 import {Role} from "./role";
 import {Customer} from "./customer";
+import {Stats} from "./stats";
 
 export interface LoginState {
     dataState: DataState;
@@ -43,4 +44,5 @@ export interface Page {
 export interface Home {
   page?: Page;
   user?: User;
+  stats?: Stats;
 }

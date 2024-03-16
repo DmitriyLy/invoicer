@@ -5,6 +5,7 @@ import io.dmly.invoicer.model.Invoice;
 import io.dmly.invoicer.model.InvoicerUserDetails;
 import io.dmly.invoicer.response.HttpResponse;
 import io.dmly.invoicer.service.CustomerService;
+import io.dmly.invoicer.service.StatsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +23,7 @@ import java.util.Optional;
 public class CustomerController {
 
     private final CustomerService customerService;
+    private final StatsService statsService;
 
     @GetMapping(path = "/list")
     public ResponseEntity<HttpResponse> getCustomers(@AuthenticationPrincipal InvoicerUserDetails userDetails,
@@ -32,7 +34,8 @@ public class CustomerController {
                         .timestamp(LocalDateTime.now().toString())
                         .data(Map.of(
                                 "user", userDetails.getUser(),
-                                "page", customerService.getCustomers(page.orElse(0), size.orElse(10))
+                                "page", customerService.getCustomers(page.orElse(0), size.orElse(10)),
+                                "stats", statsService.getStats()
                         ))
                         .message("Customers listed")
                         .status(HttpStatus.OK)
