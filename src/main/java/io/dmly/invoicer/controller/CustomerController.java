@@ -88,7 +88,7 @@ public class CustomerController {
                         .timestamp(LocalDateTime.now().toString())
                         .data(Map.of(
                                 "user", userDetails.getUser(),
-                                "customers", customerService.searchCustomers(name.orElse(""), page.orElse(0), size.orElse(10))
+                                "page", customerService.searchCustomers(name.orElse(""), page.orElse(0), size.orElse(10))
                         ))
                         .message("Customer searched")
                         .status(HttpStatus.OK)
