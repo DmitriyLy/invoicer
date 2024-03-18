@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
 import {catchError, Observable, tap, throwError} from 'rxjs';
-import {CustomHttpResponse, Home, Page, Profile} from '../interface/appstates';
+import {CustomerState, CustomHttpResponse, Home, Page, Profile} from '../interface/appstates';
 import {User} from "../interface/user";
 import {Key} from "../enum/key.enum";
 import {JwtHelperService} from "@auth0/angular-jwt";
@@ -19,6 +19,22 @@ export class CustomerService {
   customers$ = (page: number = 0, size: number = 10) => <Observable<CustomHttpResponse<Home>>>
     this.http.get<CustomHttpResponse<Page & User>>
     (`${this.server}/api/v1/customer/list?page=${page}&size=${size}`)
+      .pipe(
+        tap(console.log),
+        catchError(this.handleError)
+      );
+
+  customer$ = (customerId: number) => <Observable<CustomHttpResponse<CustomerState>>>
+    this.http.get<CustomHttpResponse<CustomerState>>
+    (`${this.server}/api/v1/customer/get/${customerId}`)
+      .pipe(
+        tap(console.log),
+        catchError(this.handleError)
+      );
+
+  update$ = (customer: Customer) => <Observable<CustomHttpResponse<CustomerState>>>
+    this.http.put<CustomHttpResponse<CustomerState>>
+    (`${this.server}/api/v1/customer/update`, customer)
       .pipe(
         tap(console.log),
         catchError(this.handleError)

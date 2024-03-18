@@ -7,6 +7,7 @@ import {CustomerService} from "../../service/customer.service";
 import {Customer} from "../../interface/customer";
 import { DataState } from 'src/app/enum/datastate.enum';
 import {NgForm} from "@angular/forms";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-customers',
@@ -22,7 +23,7 @@ export class CustomersComponent implements OnInit {
   isLoading$ = this.isLoadingSubject.asObservable();
   readonly DataState = DataState;
 
-  constructor(private userService: UserService, private customerService: CustomerService) {
+  constructor(private router: Router, private customerService: CustomerService) {
   }
 
   ngOnInit(): void {
@@ -80,6 +81,10 @@ export class CustomersComponent implements OnInit {
           return of({dataState: DataState.ERROR, appData: this.dataSubject.value, error})
         })
       )
+  }
+
+  selectCustomer(customer: Customer): void {
+    this.router.navigate([`/customers/${customer.id}`])
   }
 
 }

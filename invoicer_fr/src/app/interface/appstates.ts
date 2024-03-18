@@ -46,3 +46,8 @@ export interface Home {
   user?: User;
   stats?: Stats;
 }
+
+export  interface  CustomerState {
+  user: User;
+  customer: Customer
+}
