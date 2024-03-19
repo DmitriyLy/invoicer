@@ -20,7 +20,7 @@ import java.util.Optional;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "/api/v1/invoice")
-public class InvoiceController {
+public class InvoiceController extends AbstractController {
 
     private final InvoiceService invoiceService;
     private final CustomerService customerService;
@@ -32,7 +32,7 @@ public class InvoiceController {
                 HttpResponse.builder()
                         .timestamp(LocalDateTime.now().toString())
                         .data(Map.of(
-                                "user", userDetails.getUser(),
+                                "user", getUserDto(userDetails),
                                 "invoice", invoiceService.createInvoice(invoice)
                         ))
                         .message("Invoice created")
@@ -50,8 +50,8 @@ public class InvoiceController {
                 HttpResponse.builder()
                         .timestamp(LocalDateTime.now().toString())
                         .data(Map.of(
-                                "user", userDetails.getUser(),
-                                "customers", invoiceService.getInvoices(page.orElse(0), size.orElse(10))
+                                "user", getUserDto(userDetails),
+                                "page", invoiceService.getInvoices(page.orElse(0), size.orElse(10))
                         ))
                         .message("Invoices listed")
                         .status(HttpStatus.OK)
@@ -60,13 +60,13 @@ public class InvoiceController {
         );
     }
 
-    @PostMapping(path = "/new")
+    @GetMapping(path = "/new")
     public ResponseEntity<HttpResponse> newInvoice(@AuthenticationPrincipal InvoicerUserDetails userDetails) {
         return ResponseEntity.ok(
                 HttpResponse.builder()
                         .timestamp(LocalDateTime.now().toString())
                         .data(Map.of(
-                                "user", userDetails.getUser(),
+                                "user", getUserDto(userDetails),
                                 "customers", customerService.getCustomers()
                         ))
                         .message("Customers got")
@@ -83,7 +83,7 @@ public class InvoiceController {
                 HttpResponse.builder()
                         .timestamp(LocalDateTime.now().toString())
                         .data(Map.of(
-                                "user", userDetails.getUser(),
+                                "user", getUserDto(userDetails),
                                 "invoice", invoiceService.findById(id)
                         ))
                         .message("Invoice fetched")

@@ -2,6 +2,9 @@ package io.dmly.invoicer.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import io.dmly.invoicer.json.deserializer.StringToLocalDateTimeDeserializer;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -21,6 +24,7 @@ public class Invoice {
     private Long id;
     private String number;
     private String services;
+    @JsonDeserialize(using = StringToLocalDateTimeDeserializer.class)
     private LocalDateTime date;
     private String status;
     private double total;

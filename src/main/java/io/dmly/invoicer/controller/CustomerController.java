@@ -1,5 +1,7 @@
 package io.dmly.invoicer.controller;
 
+import io.dmly.invoicer.dto.UserDto;
+import io.dmly.invoicer.entitymapper.UserDtoMapper;
 import io.dmly.invoicer.model.Customer;
 import io.dmly.invoicer.model.Invoice;
 import io.dmly.invoicer.model.InvoicerUserDetails;
@@ -20,7 +22,7 @@ import java.util.Optional;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "/api/v1/customer")
-public class CustomerController {
+public class CustomerController extends AbstractController {
 
     private final CustomerService customerService;
     private final StatsService statsService;
@@ -33,7 +35,7 @@ public class CustomerController {
                 HttpResponse.builder()
                         .timestamp(LocalDateTime.now().toString())
                         .data(Map.of(
-                                "user", userDetails.getUser(),
+                                "user", getUserDto(userDetails),
                                 "page", customerService.getCustomers(page.orElse(0), size.orElse(10)),
                                 "stats", statsService.getStats()
                         ))
@@ -51,7 +53,7 @@ public class CustomerController {
                 HttpResponse.builder()
                         .timestamp(LocalDateTime.now().toString())
                         .data(Map.of(
-                                "user", userDetails.getUser(),
+                                "user", getUserDto(userDetails),
                                 "customer", customerService.createCustomer(customer)
                         ))
                         .message("Customer created")
@@ -68,7 +70,7 @@ public class CustomerController {
                 HttpResponse.builder()
                         .timestamp(LocalDateTime.now().toString())
                         .data(Map.of(
-                                "user", userDetails.getUser(),
+                                "user", getUserDto(userDetails),
                                 "customer", customerService.getCustomer(id)
                         ))
                         .message("Customer fetched")
@@ -87,7 +89,7 @@ public class CustomerController {
                 HttpResponse.builder()
                         .timestamp(LocalDateTime.now().toString())
                         .data(Map.of(
-                                "user", userDetails.getUser(),
+                                "user", getUserDto(userDetails),
                                 "page", customerService.searchCustomers(name.orElse(""), page.orElse(0), size.orElse(10))
                         ))
                         .message("Customer searched")
@@ -105,7 +107,7 @@ public class CustomerController {
                 HttpResponse.builder()
                         .timestamp(LocalDateTime.now().toString())
                         .data(Map.of(
-                                "user", userDetails.getUser(),
+                                "user", getUserDto(userDetails),
                                 "customer", customerService.updateCustomer(customer)
                         ))
                         .message("Customer update")
@@ -124,10 +126,11 @@ public class CustomerController {
                 HttpResponse.builder()
                         .timestamp(LocalDateTime.now().toString())
                         .data(Map.of(
-                                "user", userDetails.getUser(),
-                                "customer", customerService.getCustomer(id)
+                                "user", getUserDto(userDetails),
+                                "customer", customerService.getCustomer(id),
+                                "invoice", invoice
                         ))
-                        .message("Invoice created")
+                        .message("Invoice added to customer")
                         .status(HttpStatus.CREATED)
                         .statusCode(HttpStatus.CREATED.value())
                         .build()

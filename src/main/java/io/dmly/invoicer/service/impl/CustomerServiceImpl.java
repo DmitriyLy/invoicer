@@ -65,7 +65,7 @@ public class CustomerServiceImpl implements CustomerService {
     public void addInvoiceToCustomer(Long id, Invoice invoice) {
         Customer customer = getCustomer(id);
         invoice.setCustomer(customer);
-        invoiceService.update(invoice);
+        invoiceService.createInvoice(invoice);
     }
 
     @Override

@@ -1,10 +1,8 @@
 import {Injectable} from '@angular/core';
-import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
+import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import {catchError, Observable, tap, throwError} from 'rxjs';
-import {CustomerState, CustomHttpResponse, Home, Page, Profile} from '../interface/appstates';
+import {CustomerState, CustomHttpResponse, Home} from '../interface/appstates';
 import {User} from "../interface/user";
-import {Key} from "../enum/key.enum";
-import {JwtHelperService} from "@auth0/angular-jwt";
 import {Customer} from "../interface/customer";
 
 @Injectable({
@@ -17,7 +15,7 @@ export class CustomerService {
   }
 
   customers$ = (page: number = 0, size: number = 10) => <Observable<CustomHttpResponse<Home>>>
-    this.http.get<CustomHttpResponse<Page & User>>
+    this.http.get<CustomHttpResponse<Home>>
     (`${this.server}/api/v1/customer/list?page=${page}&size=${size}`)
       .pipe(
         tap(console.log),
@@ -49,7 +47,7 @@ export class CustomerService {
       );
 
   searchCustomers$ = (name: string = '', page: number = 0, size: number = 10) => <Observable<CustomHttpResponse<Home>>>
-    this.http.get<CustomHttpResponse<Page & User>>
+    this.http.get<CustomHttpResponse<Home>>
     (`${this.server}/api/v1/customer/search?name=${name}&page=${page}&size=${size}`)
       .pipe(
         tap(console.log),

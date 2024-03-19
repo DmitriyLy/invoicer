@@ -4,6 +4,7 @@ import {UserEvent} from "./user-event";
 import {Role} from "./role";
 import {Customer} from "./customer";
 import {Stats} from "./stats";
+import {Invoice} from "./invoice";
 
 export interface LoginState {
     dataState: DataState;
@@ -32,7 +33,7 @@ export interface Profile {
     refresh_token: string;
 }
 
-export interface Page {
+export interface CustomerPage {
   content: Customer[];
   totalPages: number;
   totalElements: number;
@@ -41,13 +42,33 @@ export interface Page {
   number: number;
 }
 
+export interface InvoicePage {
+  content: Invoice[];
+  totalPages: number;
+  totalElements: number;
+  numberOfElements: number;
+  size: number;
+  number: number;
+}
+
 export interface Home {
-  page?: Page;
+  page?: CustomerPage;
   user?: User;
   stats?: Stats;
 }
 
-export  interface  CustomerState {
+export interface Invoices {
+  page?: InvoicePage;
+  user?: User;
+}
+
+export interface CustomerState {
   user: User;
-  customer: Customer
+  customer: Customer;
+  invoice?: Invoice;
+}
+
+export interface UserCustomers {
+  user?: User;
+  customers?: Customer[]
 }
