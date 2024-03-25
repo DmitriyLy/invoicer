@@ -79,12 +79,15 @@ public class InvoiceController extends AbstractController {
     @GetMapping(path = "/get/{id}")
     public ResponseEntity<HttpResponse> getInvoice(@AuthenticationPrincipal InvoicerUserDetails userDetails,
                                                     @PathVariable Long id) {
+        Invoice invoice = invoiceService.findById(id);
+        Customer customer = invoice.getCustomer();
         return ResponseEntity.ok(
                 HttpResponse.builder()
                         .timestamp(LocalDateTime.now().toString())
                         .data(Map.of(
                                 "user", getUserDto(userDetails),
-                                "invoice", invoiceService.findById(id)
+                                "invoice", invoice,
+                                "customer", customer
                         ))
                         .message("Invoice fetched")
                         .status(HttpStatus.OK)

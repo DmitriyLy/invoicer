@@ -37,6 +37,14 @@ export class InvoiceService {
         catchError(this.handleError)
       );
 
+  invoice = (invoiceId: number) => <Observable<CustomHttpResponse<CustomerState>>>
+    this.http.get<CustomHttpResponse<CustomerState>>
+    (`${this.server}/api/v1/invoice/get/${invoiceId}`)
+      .pipe(
+        tap(console.log),
+        catchError(this.handleError)
+      );
+
   private handleError(error: HttpErrorResponse): Observable<never> {
     console.log(error);
     let errorMessage: string;

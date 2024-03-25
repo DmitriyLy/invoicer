@@ -26,7 +26,7 @@ const routes: Routes = [
   { path: 'invoices/new', component: NewinvoiceComponent, canActivate: [AuthenticationGuard] },
   { path: 'invoices', component: InvoicesComponent, canActivate: [AuthenticationGuard] },
   { path: 'customers/:id', component: CustomerComponent, canActivate: [AuthenticationGuard] },
-  { path: 'invoices/:customerId/:invoiceNumber', component: InvoiceComponent, canActivate: [AuthenticationGuard] },
+  { path: 'invoices/:id/:invoiceNumber', component: InvoiceComponent, canActivate: [AuthenticationGuard] },
   { path: '', component: HomeComponent, canActivate: [AuthenticationGuard] },
   { path: '', redirectTo: '/', pathMatch: 'full' },
   { path: '**', component: HomeComponent }
