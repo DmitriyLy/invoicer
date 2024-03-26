@@ -22,6 +22,7 @@ import { InvoicesComponent } from './component/invoices/invoices.component';
 import { InvoiceComponent } from './component/invoice/invoice.component';
 import { ExtractArrayValue } from './pipes/extractvalue.pipe';
 import { GetTotals } from './pipes/gettotalspipe.pipe';
+import {ResponseCacheInterceptor} from "./interceptor/response.cache.interceptor";
 
 @NgModule({
   declarations: [
@@ -50,7 +51,8 @@ import { GetTotals } from './pipes/gettotalspipe.pipe';
     FormsModule
   ],
   providers: [
-    { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true }
+    { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: ResponseCacheInterceptor, multi: true }
   ],
   bootstrap: [AppComponent]
 })

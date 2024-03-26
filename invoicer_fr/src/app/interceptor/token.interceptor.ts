@@ -9,13 +9,16 @@ import {BehaviorSubject, catchError, Observable, switchMap, throwError} from 'rx
 import {Key} from "../enum/key.enum";
 import {UserService} from "../service/user.service";
 import {CustomHttpResponse, Profile} from "../interface/appstates";
+import {AbstractHttpInterceptor} from "./abstract.http.interceptor";
 
-@Injectable()
-export class TokenInterceptor implements HttpInterceptor {
+@Injectable({ providedIn: 'root' })
+export class TokenInterceptor extends AbstractHttpInterceptor implements HttpInterceptor {
   private isTokenRefreshing: boolean = false;
   private refreshTokenSubject: BehaviorSubject<CustomHttpResponse<Profile>> = new BehaviorSubject<CustomHttpResponse<Profile>>(null);
 
-  constructor(private userService: UserService) {}
+  constructor(private userService: UserService) {
+    super();
+  }
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> | Observable<HttpResponse<unknown>> {
     if (this.isWhiteListUrl(request.url)) {
@@ -40,14 +43,6 @@ export class TokenInterceptor implements HttpInterceptor {
           Authorization: `Bearer ${token}`
         }}
     );
-  }
-
-  private isWhiteListUrl(url: string): boolean {
-    return url.includes('verify') ||
-      url.includes('login') ||
-      url.includes('register') ||
-      url.includes('refresh') ||
-      url.includes('reset-password');
   }
 
   private handleRefreshToken(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
