@@ -20,6 +20,8 @@ import { NewcustomerComponent } from './component/newcustomer/newcustomer.compon
 import { NewinvoiceComponent } from './component/newinvoice/newinvoice.component';
 import { InvoicesComponent } from './component/invoices/invoices.component';
 import { InvoiceComponent } from './component/invoice/invoice.component';
+import { ExtractArrayValue } from './pipes/extractvalue.pipe';
+import { GetTotals } from './pipes/gettotalspipe.pipe';
 
 @NgModule({
   declarations: [
@@ -37,7 +39,9 @@ import { InvoiceComponent } from './component/invoice/invoice.component';
     NewcustomerComponent,
     NewinvoiceComponent,
     InvoicesComponent,
-    InvoiceComponent
+    InvoiceComponent,
+    ExtractArrayValue,
+    GetTotals
   ],
   imports: [
     BrowserModule,
