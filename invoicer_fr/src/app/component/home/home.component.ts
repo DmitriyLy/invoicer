@@ -1,13 +1,13 @@
 import {Component, OnInit} from '@angular/core';
 import {BehaviorSubject, catchError, map, Observable, of, startWith} from "rxjs";
 import {State} from "../../interface/state";
-import {CustomHttpResponse, Home, CustomerPage, Profile} from "../../interface/appstates";
-import {UserService} from "../../service/user.service";
+import {CustomHttpResponse, Home} from "../../interface/appstates";
 import {DataState} from 'src/app/enum/datastate.enum';
 import {CustomerService} from "../../service/customer.service";
-import {User} from "../../interface/user";
 import {Customer} from "../../interface/customer";
 import {Router} from "@angular/router";
+import {HttpEvent, HttpEventType} from "@angular/common/http";
+import {saveAs} from 'file-saver';
 
 @Component({
   selector: 'app-home',
@@ -20,8 +20,10 @@ export class HomeComponent implements OnInit {
   private dataSubject = new BehaviorSubject<CustomHttpResponse<Home>>(null);
   private isLoadingSubject = new BehaviorSubject<boolean>(false);
   private currentPageSubject = new BehaviorSubject<number>(0);
+  private fileStatusSubject = new BehaviorSubject<{ status: string, type: string, percent: number }>(undefined);
   currentPage$ = this.currentPageSubject.asObservable();
   isLoading$ = this.isLoadingSubject.asObservable();
+  fileStatus$ = this.fileStatusSubject.asObservable();
   readonly DataState = DataState;
 
   constructor(private router: Router, private customerService: CustomerService) {
@@ -70,4 +72,39 @@ export class HomeComponent implements OnInit {
     this.router.navigate([`/customers/${customer.id}`])
   }
 
+  report(): void {
+    this.homeState$ = this.customerService.downloadReport$()
+      .pipe(
+        map(response => {
+          this.reportProgress(response);
+          return {
+            dataState: DataState.LOADED,
+            appData: this.dataSubject.value
+          };
+        }),
+        startWith({dataState: DataState.LOADED, appData: this.dataSubject.value}),
+        catchError((error: string) => {
+          return of({dataState: DataState.ERROR, appData: this.dataSubject.value, error})
+        })
+      )
+  }
+
+  private reportProgress(httpEvent: HttpEvent<string[] | Blob>): void {
+    switch (httpEvent.type) {
+      case HttpEventType.DownloadProgress || HttpEventType.UploadProgress:
+        this.fileStatusSubject.next({ status: 'progress', type: 'Downloading...', percent: Math.round(100 * httpEvent.loaded / httpEvent.total) });
+        break;
+      case HttpEventType.ResponseHeader:
+        console.log('Got response Headers', httpEvent);
+        break;
+      case HttpEventType.Response:
+        saveAs(new File([<Blob>httpEvent.body], httpEvent.headers.get('File-Name'),
+          { type: `${httpEvent.headers.get('Content-Type')};charset-utf-8` }));
+        this.fileStatusSubject.next(undefined);
+        break;
+      default:
+        console.log(httpEvent);
+        break;
+    }
+  }
 }

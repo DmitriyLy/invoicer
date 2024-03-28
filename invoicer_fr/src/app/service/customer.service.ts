@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {HttpClient, HttpErrorResponse} from '@angular/common/http';
+import {HttpClient, HttpErrorResponse, HttpEvent} from '@angular/common/http';
 import {catchError, Observable, tap, throwError} from 'rxjs';
 import {CustomerState, CustomHttpResponse, Home} from '../interface/appstates';
 import {User} from "../interface/user";
@@ -49,6 +49,14 @@ export class CustomerService {
   searchCustomers$ = (name: string = '', page: number = 0, size: number = 10) => <Observable<CustomHttpResponse<Home>>>
     this.http.get<CustomHttpResponse<Home>>
     (`${this.server}/api/v1/customer/search?name=${name}&page=${page}&size=${size}`)
+      .pipe(
+        tap(console.log),
+        catchError(this.handleError)
+      );
+
+  downloadReport$ = () => <Observable<HttpEvent<Blob>>>
+    this.http.post<HttpEvent<Blob>>
+    (`${this.server}/api/v1/customer/download/report`, {reportProgress: true, observe: 'events', responseType: 'blob'})
       .pipe(
         tap(console.log),
         catchError(this.handleError)

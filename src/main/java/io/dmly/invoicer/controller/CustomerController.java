@@ -5,17 +5,22 @@ import io.dmly.invoicer.entitymapper.UserDtoMapper;
 import io.dmly.invoicer.model.Customer;
 import io.dmly.invoicer.model.Invoice;
 import io.dmly.invoicer.model.InvoicerUserDetails;
+import io.dmly.invoicer.report.CustomerReport;
 import io.dmly.invoicer.response.HttpResponse;
 import io.dmly.invoicer.service.CustomerService;
 import io.dmly.invoicer.service.StatsService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -135,5 +140,17 @@ public class CustomerController extends AbstractController {
                         .statusCode(HttpStatus.CREATED.value())
                         .build()
         );
+    }
+
+    @PostMapping(path = "/download/report")
+    public ResponseEntity<Resource> downloadReport() {
+        CustomerReport report = new CustomerReport(customerService.getCustomers());
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("File-Name", "customer-report.xlsx");
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment;File-Name=customer-report.xlsx");
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType("application/vnd.ms-excel"))
+                .headers(headers)
+                .body(report.generateReport());
     }
 }

@@ -4,6 +4,8 @@ import io.dmly.invoicer.model.Customer;
 import io.dmly.invoicer.model.Invoice;
 import org.springframework.data.domain.Page;
 
+import java.util.List;
+
 public interface CustomerService {
 
     Customer createCustomer(Customer customer);
@@ -12,7 +14,7 @@ public interface CustomerService {
 
     Page<Customer> getCustomers(int page, int size);
 
-    Iterable<Customer> getCustomers();
+    List<Customer> getCustomers();
 
     Customer getCustomer(Long id);
 

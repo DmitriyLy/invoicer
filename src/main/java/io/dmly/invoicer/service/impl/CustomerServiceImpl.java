@@ -15,6 +15,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -43,8 +45,10 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public Iterable<Customer> getCustomers() {
-        return customerRepository.findAll();
+    public List<Customer> getCustomers() {
+        List<Customer> result = new ArrayList<>();
+        customerRepository.findAll().iterator().forEachRemaining(result::add);
+        return result;
     }
 
     @Override

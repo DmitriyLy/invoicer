@@ -21,6 +21,7 @@
 		<org.apache.commons.commons-collections4.version>4.4</org.apache.commons.commons-collections4.version>
 		<commons-io.version>2.15.1</commons-io.version>
 		<nl.basjes.parse.useragent.version>7.25.0</nl.basjes.parse.useragent.version>
+		<org.apache.poi.version>5.2.5</org.apache.poi.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -105,6 +106,16 @@
 			<groupId>nl.basjes.parse.useragent</groupId>
 			<artifactId>yauaa</artifactId>
 			<version>${nl.basjes.parse.useragent.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi</artifactId>
+			<version>${org.apache.poi.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-ooxml</artifactId>
+			<version>${org.apache.poi.version}</version>
 		</dependency>
 
 	</dependencies>
