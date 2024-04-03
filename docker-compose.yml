@@ -11,6 +11,8 @@ services:
       - ${ENV_FILE}
 
   invoicer:
+    depends_on:
+      - postgres_invoicer
     container_name: invoicercontainer
     build:
       context: .
