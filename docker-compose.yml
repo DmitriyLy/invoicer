@@ -1,0 +1,31 @@
+services:
+
+  postgres_invoicer:
+    container_name: postgres_invoicer
+    image: postgres:16
+    ports:
+      - 5432:5432
+    networks:
+      - invoicer_network
+    env_file:
+      - ${ENV_FILE}
+
+  invoicer:
+    container_name: invoicercontainer
+    build:
+      context: .
+      args:
+        APPLICATION_PORT: ${APPLICATION_PORT}
+    image: invoicer:v1
+    restart: unless-stopped
+    env_file:
+      - ${ENV_FILE}
+    expose:
+      - ${APPLICATION_PORT}
+    ports:
+      - ${APPLICATION_PORT}:${HOST_PORT}
+    networks:
+      - invoicer_network
+
+networks:
+  invoicer_network: {}

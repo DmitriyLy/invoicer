@@ -59,6 +59,11 @@ public class TokenProviderImpl implements TokenProvider {
 
     @Override
     public String getAccessToken(User user) {
+        //TODO REMOVE - FOR DEBUG
+        System.out.println("+++ >>>>>>> ##############");
+        System.out.println("Secret value: " + secret);
+        System.out.println("+++ >>>>>>>> ##############");
+
         return JWT.create()
                 .withIssuer(issuer)
                 .withAudience(audience)
