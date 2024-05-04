@@ -2,9 +2,6 @@ package io.dmly.invoicer.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
@@ -13,7 +10,6 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
-import java.util.Set;
 
 @Data
 @SuperBuilder

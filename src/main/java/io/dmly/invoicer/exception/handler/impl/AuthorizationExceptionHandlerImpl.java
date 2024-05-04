@@ -21,7 +21,9 @@ public class AuthorizationExceptionHandlerImpl implements AuthorizationException
 
     @Override
     public void handle(HttpServletResponse response, Exception exception) {
-        log.error(exception.getMessage(), exception);
+        if (log.isErrorEnabled()) {
+            log.error(exception.getMessage(), exception);
+        }
 
         HttpStatus httpStatus;
         HttpResponse httpResponse;

@@ -6,6 +6,7 @@ import io.dmly.invoicer.repository.EventRepository;
 import io.dmly.invoicer.service.EventService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
@@ -28,6 +29,6 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public void addUserEvent(Long userId, EventType eventType, String device, String ipAddress) {
-
+        throw new NotImplementedException();
     }
 }

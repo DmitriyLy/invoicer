@@ -1,7 +1,5 @@
 package io.dmly.invoicer.controller;
 
-import io.dmly.invoicer.dto.UserDto;
-import io.dmly.invoicer.entitymapper.UserDtoMapper;
 import io.dmly.invoicer.model.Customer;
 import io.dmly.invoicer.model.Invoice;
 import io.dmly.invoicer.model.InvoicerUserDetails;
@@ -20,7 +18,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 

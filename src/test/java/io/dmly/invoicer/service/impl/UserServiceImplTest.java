@@ -94,7 +94,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void verifyPasswordReset_validKey() {
+    void verifyPasswordResetWithValidKey() {
         var entity = new ResetPasswordVerificationEntity(null, 1L, null, LocalDateTime.now().plusDays(1));
 
         when(userRepository.getResetPasswordVerificationEntityByKey(anyString())).thenReturn(Optional.of(entity));
@@ -104,7 +104,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void verifyPasswordReset_expiredKey() {
+    void verifyPasswordResetWithExpiredKey() {
         var entity = new ResetPasswordVerificationEntity(
                 null,
                 null,
@@ -118,14 +118,14 @@ class UserServiceImplTest {
     }
 
     @Test
-    void changePassword_matchingPasswords() {
+    void changePasswordWithMatchingPasswords() {
         ChangePasswordForm form = new ChangePasswordForm("newPassword", "newPassword");
 
         assertDoesNotThrow(() -> userService.changePassword("key", form));
     }
 
     @Test
-    void changePassword_nonMatchingPasswords() {
+    void changePasswordWithNonMatchingPasswords() {
         ChangePasswordForm form = new ChangePasswordForm("newPassword", "differentPassword");
 
         assertThrows(ApiException.class, () -> userService.changePassword("key", form));
@@ -139,7 +139,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void updatePassword_nonMatchingPasswords() {
+    void updatePasswordWithNonMatchingPasswords() {
         UpdatePasswordForm form = new UpdatePasswordForm();
         form.setCurrentPassword("oldPassword");
         form.setNewPassword("newPassword");

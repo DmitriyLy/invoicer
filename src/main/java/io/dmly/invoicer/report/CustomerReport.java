@@ -85,7 +85,9 @@ public class CustomerReport {
 
             return new InputStreamResource(new ByteArrayInputStream(out.toByteArray()));
         } catch (IOException e) {
-            log.error(e.getMessage());
+            if (log.isErrorEnabled()) {
+                log.error(e.getMessage());
+            }
             throw new ApiException(e.getMessage(), e);
         }
     }

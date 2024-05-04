@@ -11,6 +11,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.util.Locale;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -20,7 +22,7 @@ public class InvoiceServiceImpl implements InvoiceService {
 
     @Override
     public Invoice createInvoice(Invoice invoice) {
-        invoice.setNumber(RandomStringUtils.randomAlphabetic(8).toUpperCase());
+        invoice.setNumber(RandomStringUtils.randomAlphabetic(8).toUpperCase(Locale.getDefault()));
         return invoiceRepository.save(invoice);
     }
 

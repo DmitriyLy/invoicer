@@ -9,11 +9,8 @@ import com.auth0.jwt.interfaces.JWTVerifier;
 import io.dmly.invoicer.exception.ApiException;
 import io.dmly.invoicer.exception.TokenIsExpiredException;
 import io.dmly.invoicer.jwt.provider.TokenProvider;
-import io.dmly.invoicer.model.InvoicerUserDetails;
-import io.dmly.invoicer.model.Role;
 import io.dmly.invoicer.model.User;
 import io.dmly.invoicer.service.RoleService;
-import io.dmly.invoicer.service.UserService;
 import io.dmly.invoicer.utils.PermissionUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -109,10 +106,10 @@ public class TokenProviderImpl implements TokenProvider {
             return getJwtVerifier().verify(token).getSubject();
         } catch (TokenExpiredException e) {
             request.setAttribute("expiredMessage", e.getMessage());
-            throw new TokenIsExpiredException(e.getMessage());
+            throw new TokenIsExpiredException(e.getMessage(), e);
         } catch (InvalidClaimException e) {
             request.setAttribute("invalidClaim", e.getMessage());
-            throw new ApiException(e.getMessage());
+            throw new ApiException(e.getMessage(), e);
         } catch (Exception e) {
             log.error("Cannot get subject", e);
             throw new ApiException("Cannot get subject", e);

@@ -37,7 +37,7 @@ public class ImageServiceImpl implements ImageService {
             Files.copy(image.getInputStream(), filePath, REPLACE_EXISTING);
         } catch (IOException e) {
             log.error("Cannot save image {}", filePath);
-            throw new ApiException("Cannot save image");
+            throw new ApiException("Cannot save image", e);
         }
 
         return fileName;
@@ -49,7 +49,7 @@ public class ImageServiceImpl implements ImageService {
             return Files.readAllBytes(getImageDirPath().resolve(imageName));
         } catch (IOException e) {
             log.error("Cannot get image", e);
-            throw new ApiException("Cannot get image " + imageName);
+            throw new ApiException("Cannot get image " + imageName, e);
         }
     }
 
@@ -61,7 +61,7 @@ public class ImageServiceImpl implements ImageService {
                 Files.createDirectories(dir);
             } catch (IOException e) {
                 log.error("Cannot create dir {}", dir);
-                throw new ApiException("Cannot create image dir");
+                throw new ApiException("Cannot create image dir", e);
             }
         }
 

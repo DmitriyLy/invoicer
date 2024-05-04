@@ -8,6 +8,7 @@ class InvoicerApplicationTests {
 
 	@Test
 	void contextLoads() {
+		System.out.println("Loaded");
 	}
 
 }

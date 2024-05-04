@@ -64,7 +64,9 @@ public class UserServiceImpl implements UserService {
         Optional<User> user = userRepository.getUserByEmailAndValidCode(email, code);
 
         if (user.isEmpty()) {
-            log.error("Cannot find a user by passed email {} and code {}", email, code);
+            if (log.isErrorEnabled()) {
+                log.error("Cannot find a user by passed email {} and code {}", email, code);
+            }
             throw new ApiException("Cannot verify a user by passed parameters");
         }
 
@@ -165,13 +167,17 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void updateAccountSettings(Long id, UpdateAccountSettingsForm form) {
-        log.info("updating account settings for user id {}", id);
+        if (log.isInfoEnabled()) {
+            log.info("updating account settings for user id {}", id);
+        }
         userRepository.saveAccountSettings(id, form);
     }
 
     @Override
     public void toggleMfa(Long id) {
-        log.info("toggling MFA settings for user id {}", id);
+        if (log.isInfoEnabled()) {
+            log.info("toggling MFA settings for user id {}", id);
+        }
         userRepository.toggleMfa(id);
     }
 
@@ -190,7 +196,9 @@ public class UserServiceImpl implements UserService {
 
     protected void sendCodeViaSms(User userDto, String verificationCode, Date codeExpirationDate) {
         String message = String.format("Invoicer verification code: %s, active till %s", verificationCode, codeExpirationDate);
-        log.info("-----> Sending verification code in SMS >>>>>>>> " + message);
+        if (log.isInfoEnabled()) {
+            log.info("-----> Sending verification code in SMS >>>>>>>> " + message);
+        }
     }
 
     private ApiException getUserNotFoundException() {

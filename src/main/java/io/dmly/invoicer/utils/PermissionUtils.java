@@ -7,7 +7,9 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import java.util.Arrays;
 import java.util.Collection;
 
-public class PermissionUtils {
+public final class PermissionUtils {
+    private PermissionUtils() {}
+
     public static Collection<? extends GrantedAuthority> getAuthorities(String permissions) {
         return Arrays.stream(permissions.split(","))
                 .map(SimpleGrantedAuthority::new)

@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 public class EmailServiceImpl implements EmailService {
     @Override
     public void sendVerificationUrl(User user, String url, VerificationUrlType type) {
-      log.info(">>>> Sending verification URL {} on email {}", url, user.getEmail());
+        if (log.isInfoEnabled()) {
+            log.info(">>>> Sending verification URL {} on email {}", url, user.getEmail());
+        }
     }
 }

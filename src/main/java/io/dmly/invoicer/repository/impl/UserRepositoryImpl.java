@@ -91,7 +91,7 @@ public class UserRepositoryImpl implements UserRepository<User> {
 
     @Override
     public Collection<User> list(int page, int pageSize) {
-        return null;
+        return Collections.emptyList();
     }
 
     @Override
@@ -104,7 +104,7 @@ public class UserRepositoryImpl implements UserRepository<User> {
             ));
         } catch (EmptyResultDataAccessException exception) {
             log.error("Cannot find user by id {}", id);
-            throw new ApiException("Cannot find user by specified id");
+            throw new ApiException("Cannot find user by specified id", exception);
         }
     }
 

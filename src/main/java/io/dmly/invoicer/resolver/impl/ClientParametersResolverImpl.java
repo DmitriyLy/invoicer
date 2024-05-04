@@ -16,7 +16,7 @@ public class ClientParametersResolverImpl implements ClientParametersResolver {
     private UserAgentAnalyzer userAgentAnalyzer;
 
     @PostConstruct
-    private void init() {
+    public void init() {
         userAgentAnalyzer = UserAgentAnalyzer.newBuilder().hideMatcherLoadStats().withCache(1000).build();
     }
 

@@ -1,6 +1,5 @@
 package io.dmly.invoicer.security.filter;
 
-import io.dmly.invoicer.exception.ApiException;
 import io.dmly.invoicer.exception.handler.AuthorizationExceptionHandler;
 import io.dmly.invoicer.jwt.provider.TokenProvider;
 import io.dmly.invoicer.utils.TokenExtractor;

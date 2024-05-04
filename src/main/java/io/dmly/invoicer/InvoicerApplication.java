@@ -2,12 +2,11 @@ package io.dmly.invoicer;
 
 import com.auth0.jwt.exceptions.InvalidClaimException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
-import io.dmly.invoicer.controller.AbstractController;
 import io.dmly.invoicer.exception.ApiException;
 import io.dmly.invoicer.exception.handler.AuthorizationExceptionHandler;
+import io.dmly.invoicer.exception.handler.impl.AuthorizationExceptionHandlerImpl;
 import io.dmly.invoicer.utils.HttpResponseProvider;
 import io.dmly.invoicer.utils.HttpResponseWriter;
-import io.dmly.invoicer.exception.handler.impl.AuthorizationExceptionHandlerImpl;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
